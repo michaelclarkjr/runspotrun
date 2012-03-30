@@ -3,5 +3,6 @@
 
     <string name="hello">Hello World, RunSpotRunActivity!</string>
     <string name="app_name">RunSpotRun</string>
+    <string name="mapName">Map</string>
 
 </resources>
