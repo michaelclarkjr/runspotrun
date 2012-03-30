@@ -19,7 +19,7 @@ public class MainActivity extends Activity {
     public void doGoToMap(View view)
     {    	
     	Intent launchGetRank = new Intent(this, RunMapActivity.class);
-		startActivityForResult(launchGetRank, 0);
+		startActivity(launchGetRank);
     }
     
 	@Override
