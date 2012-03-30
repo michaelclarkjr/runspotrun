@@ -4,5 +4,7 @@
     <string name="hello">Hello World, RunSpotRunActivity!</string>
     <string name="app_name">RunSpotRun</string>
     <string name="mapName">Map</string>
+    <string name="MAPAPI_TOM_DEBUG">0m6pT8NVWcyjquGZEajgWcSSc9DB-pwL4ttpg4g</string>
+    <string name="MAPAPI_TOM_RELEASE">0m6pT8NVWcyhvWg_t8_-hczplZWgSxQk85X6n8w</string>
 
 </resources>
