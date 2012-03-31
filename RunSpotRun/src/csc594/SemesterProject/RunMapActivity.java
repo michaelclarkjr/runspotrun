@@ -49,13 +49,7 @@ public class RunMapActivity extends MapActivity
 			//mapView.setSatellite(true);
 			
 			//get route from calling intent
-			ArrayList<ParcMyGeoPoint> pointsExtra =  getIntent().getParcelableArrayListExtra("Route");
-			route = new ArrayList<MyGeoPoint>();
-			Iterator<ParcMyGeoPoint> itr =  pointsExtra.iterator();
-			while(itr.hasNext())
-			{		
-				route.add(itr.next().getGeoPoint());
-			}						
+			ArrayList<MyGeoPoint> route =  getIntent().getParcelableArrayListExtra("Route");					
 			
 			mapOverlays = mapView.getOverlays();        
 			projection = mapView.getProjection();
@@ -64,7 +58,7 @@ public class RunMapActivity extends MapActivity
 			MapController mapController = mapView.getController();
 //			mapController.zoomToSpan(route.get(0).getLatitudeE6(), route.get(4).getLongitudeE6());
 			mapController.setCenter(route.get(0).getPoint());
-			mapController.setZoom(14);
+			mapController.setZoom(15);
         	
 		} catch (Exception e) {		
 			new AlertDialog.Builder(this)
@@ -97,8 +91,7 @@ public class RunMapActivity extends MapActivity
 
         // The following line should not be required but it is,
         // at least up til Froyo.
-        mapView.postInvalidateDelayed(2000);
-        
+        mapView.postInvalidateDelayed(2000);        
     }
     
     @Override
@@ -125,13 +118,6 @@ public class RunMapActivity extends MapActivity
             + loc.getTime() + "]",
             Toast.LENGTH_SHORT).show();
     }
-    
-//    public void onMapClick(View map)
-//    {
-//    	Toast.makeText(getBaseContext(), 
-//    			"onclick",
-//    			Toast.LENGTH_SHORT).show();
-//    }
     
     @Override
     public void onResume()
@@ -250,7 +236,8 @@ class MyOverlay extends Overlay
 
 	    	// Create a testing Rectangle with the size and coordinates of our icon
 	    	// Set the testing Rectangle with the size and coordinates of our on screen icon
-    		hitTestRecr.set(-32/2,-32,32/2,0);
+    		int limit = 32;
+    		hitTestRecr.set(-limit,-limit,limit,limit);
     		hitTestRecr.offset(screenCoords.x,screenCoords.y);
 
 	    	//  At last test for a match between our Rectangle and the location clicked by the user
