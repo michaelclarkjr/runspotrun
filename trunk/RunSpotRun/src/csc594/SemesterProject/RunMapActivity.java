@@ -16,6 +16,8 @@ import android.graphics.Point;
 import android.graphics.RectF;
 import android.location.Location;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Toast;
 
@@ -91,7 +93,7 @@ public class RunMapActivity extends MapActivity
 
         // The following line should not be required but it is,
         // at least up til Froyo.
-        mapView.postInvalidateDelayed(2000);        
+        //mapView.postInvalidateDelayed(2000);        
     }
     
     @Override
@@ -138,10 +140,28 @@ public class RunMapActivity extends MapActivity
         super.onPause();
 //        currentLoc.disableMyLocation();
     }
-	
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+//        MenuInflater inflater = getMenuInflater();
+//        inflater.inflate(R.layout.mapsmenu, menu);
+//        return true;
+    	menu
+		.add(Menu.NONE, Menu.FIRST+2, 1, "Reset");
+		//.setIcon(R.drawable.ic_menu_refresh);
+
+		menu
+			.add(Menu.NONE, Menu.FIRST+1, 0, "Add");
+			//.setIcon(R.drawable.ic_menu_add);
+
+		return(super.onCreateOptionsMenu(menu));
+    }
 
 class MyOverlay extends Overlay
 {
+	int LineColor = Color.RED;
+	int LineWidth = 2;
+	
 	//list of points to display
 	List<MyGeoPoint> points;
 	//last point selected by user tap
@@ -165,11 +185,11 @@ class MyOverlay extends Overlay
         
         Paint mPaint = new Paint();
         mPaint.setDither(true);
-        mPaint.setColor(Color.RED);
+        mPaint.setColor(LineColor);
         mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
-        mPaint.setStrokeWidth(2);
+        mPaint.setStrokeWidth(LineWidth);
 
         Point p1 = new Point();
         Point p2 = new Point();
