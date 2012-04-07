@@ -4,11 +4,16 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.Intent;
+//import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
-import csc594.SemesterProject.MyGeoPoint.MyPointType;
+//import csc594.SemesterProject.MyGeoPoint.MyPointType;
+//import android.widget.Toast;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity 
+{
+	//private static final int GET_ROUTE = 1010;
+	ArrayList<MyGeoPoint> route;
 
     /** Called when the activity is first created. */
     @Override
@@ -18,7 +23,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.main);        
     }
     
-    public void doGoToMap(View view)
+    /*public void doGoToMap(View view) //temporarily.. moved to TrackRoute
     {    	
     	Intent launchMap = new Intent(this, RunMapActivity.class);
 		
@@ -37,16 +42,39 @@ public class MainActivity extends Activity {
 		
     	launchMap.putExtra("Route", route);
 		startActivity(launchMap);
+    }*/
+    
+    public void doStartRoute(View view)
+    {    	
+    	Intent startTracking = new Intent(this, TrackRouteActivity.class);
+    	
+    	//String Text = "Started Tracking Your Route";
+    		//Toast.makeText( getApplicationContext(),Text,Toast.LENGTH_SHORT).show();
+	
+		//startActivityForResult(startTracking,GET_ROUTE);
+    	startActivity(startTracking);
     }
     
-	@Override
+   /* public void doEndRoute(View view) //temporarily.. moved to TrackRoute
+    {    	
+		finishActivity(GET_ROUTE); 
+    	
+    	String Text = "Stopped Tracking Your Route";
+    		Toast.makeText( getApplicationContext(),Text,Toast.LENGTH_SHORT).show();
+    }*/
+    
+	/*@Override
 	protected void onActivityResult(int requestCode,
 							int resultCode, Intent data) 
 	{
-		if (resultCode == RESULT_OK) 
+		if (requestCode == GET_ROUTE && resultCode == RESULT_OK) 
+		{
+			//get route data
+		}
+		else if (resultCode == RESULT_OK) 
 		{
 			//do nothing
 		}
 		super.onActivityResult(requestCode, resultCode, data);
-	}
+	}*/
 }
