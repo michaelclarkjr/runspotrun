@@ -3,13 +3,6 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
-    
-     <Button
-        android:id="@+id/goToMap"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="doGoToMap"
-        android:text="Launch Map" />
      
      <Button
         android:id="@+id/stop"
@@ -17,11 +10,26 @@
         android:layout_height="wrap_content"
         android:onClick="doEndRoute"
         android:text="Stop" />
-    
+
+ 	<Chronometer
+ 	    android:id="@+id/timer"
+ 	    android:layout_width="wrap_content"
+ 	    android:layout_height="wrap_content"
+ 	    android:layout_weight="0"
+ 	    android:paddingBottom="30dip"
+ 	    android:paddingTop="30dip" />
+ 	
      <EditText
          android:id="@+id/test"
          android:layout_width="100dp"
          android:layout_height="wrap_content"
          android:focusable="false" />
+     
+      <Button
+        android:id="@+id/goToMap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="doGoToMap"
+        android:text="Launch Map" />
      
 </LinearLayout>
