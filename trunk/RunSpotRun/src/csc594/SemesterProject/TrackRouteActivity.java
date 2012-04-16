@@ -1,9 +1,12 @@
 package csc594.SemesterProject;
 
 import java.util.ArrayList;
-
+import java.util.Calendar;
+import java.text.SimpleDateFormat;
+import csc594.SemesterProject.MyGeoPoint.MyPointType;
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -11,19 +14,31 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Chronometer;
+
 //import android.widget.Toast;
-import csc594.SemesterProject.MyGeoPoint.MyPointType;
 
 public class TrackRouteActivity extends Activity 
 {
     private LocationManager mlocMgr;
     private LocationListener mlocListener;
-    private int latitude;
+    private ArrayList<MyGeoPoint> route;
+    private boolean isRouteFinished = false;
+    
+    private EditText testET;
+    private boolean useHardCodedPts;
+    
+    private Chronometer chronTimer;
+    private Calendar cal = Calendar.getInstance();
+    private SimpleDateFormat fmt1 = new SimpleDateFormat("MM/dd/yyyy");
+    private SimpleDateFormat fmt2 = new SimpleDateFormat("hh:mm a");
+    
+	private int latitude;
     private int longitude;
-    ArrayList<MyGeoPoint> route;
-    boolean isRouteFinished = false;
-    EditText testET;
-    boolean useHardCodedPts;
+    private String curDate;
+    private String routeName;
+    private String curTime;
+    private String curDist;
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -32,9 +47,13 @@ public class TrackRouteActivity extends Activity
 		setContentView(R.layout.route);
 		
 		testET = (EditText)findViewById(R.id.test);
-		   
-		mlocMgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		
+		chronTimer = (Chronometer)findViewById(R.id.timer);
+		curDate = fmt1.format(cal.getTime());
+		routeName = "testRoute";
+		curDist = "1.1"; //test dist
+				
+		mlocMgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         route = new ArrayList<MyGeoPoint>();
         
         Location startLoc = mlocMgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -55,13 +74,16 @@ public class TrackRouteActivity extends Activity
      		
              mlocMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mlocListener);
              			//provider, minTime in ms, minDistance in meters, Location Listener
+             					//minTime minDistance - hints not rules *might be better to use something else for set intervals*
         }  
 
         startRoute();
 	}
 
 	
-	/* add time, distance other info later */
+	/* Gets current data about a point in the route: (int) latitude, (int) longitude, (string) time, 
+	  (string) distance, (string) name (as used by the MyGeoPoint Class.
+	  */
 	private void getRoutePointData(Location loc)
 	{
 		double lat =  loc.getLatitude();
@@ -70,17 +92,21 @@ public class TrackRouteActivity extends Activity
 		latitude = (int) (lat * 1E6); //compatible with maps api
 		longitude = (int) (lng * 1E6);
 	
-		//String Text = "My current location is: " + "Latitud = " + lat +
-		//	" Longitud = " + lng;
-		//Toast.makeText( getApplicationContext(),Text,Toast.LENGTH_SHORT).show();
+		curTime = curDate + " " + fmt2.format(cal.getTime()) + " " + String.valueOf(latitude) + " " + String.valueOf(longitude);
+		//Toast.makeText( getApplicationContext(),curTime,Toast.LENGTH_SHORT).show();
+		
+		
 	}
 	
 	private void startRoute()
 	{
 		testET.setText("In Progress");
+		chronTimer.start();
+		
 		 if(!useHardCodedPts)
 		 {
-			 route.add(new MyGeoPoint(latitude, longitude, MyPointType.Start));
+			 curTime = curDate + " " + fmt2.format(cal.getTime());
+			 route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Start));
 		 }
 		 else
 		 {
@@ -93,7 +119,7 @@ public class TrackRouteActivity extends Activity
 	{
 		 if(!useHardCodedPts)
 		 {
-			 route.add(new MyGeoPoint(latitude, longitude));
+			 route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Normal));
 		 }
 		 else
 		 {
@@ -110,10 +136,14 @@ public class TrackRouteActivity extends Activity
 	
 	private void endRoute()
 	{
-		testET.setText("Finished");
+		//testET.setText("Finished");
+		chronTimer.stop();
+		testET.setText(getElapsedTimeString());
+		
 		if(!useHardCodedPts)
 		{
-			route.add(new MyGeoPoint(latitude, longitude, MyPointType.Stop));
+			curTime = curDate + " " + fmt2.format(cal.getTime());
+			route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Stop));
 			mlocMgr.removeUpdates(mlocListener); //unregister
 		}
 		else
@@ -130,6 +160,19 @@ public class TrackRouteActivity extends Activity
 		
 		//finish();
 	}
+	
+	public String getElapsedTimeString() 
+	{       
+		long elapsedTime = SystemClock.elapsedRealtime() - chronTimer.getBase();
+		
+	    //String format = String.format("%%0%dd", 2);  
+	    elapsedTime = elapsedTime / 1000;  
+	    String seconds = String.format("%s second(s)", elapsedTime % 60);  
+	    String minutes = String.format("%s minute(s)", (elapsedTime % 3600) / 60);  
+	    String hours = String.format("%s hours(s)", elapsedTime / 3600);  
+	    String time =  hours + " " + minutes + " " + seconds;  
+	    return time;  
+	}  
 	
 	 public void doEndRoute(View view)
 	 {    	
