@@ -3,33 +3,39 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
-     
-     <Button
-        android:id="@+id/stop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="doEndRoute"
-        android:text="Stop" />
-
- 	<Chronometer
- 	    android:id="@+id/timer"
- 	    android:layout_width="wrap_content"
- 	    android:layout_height="wrap_content"
- 	    android:layout_weight="0"
- 	    android:paddingBottom="30dip"
- 	    android:paddingTop="30dip" />
+    
+     <TableLayout android:id="@+id/trackRoute1" android:layout_width="fill_parent" android:layout_height="wrap_content"
+				android:gravity="center" android:paddingTop="10dp" android:paddingBottom="10dp">
+				
+		<TableRow android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="center">
+			<Chronometer android:id="@+id/timer" android:format="@string/chronometer_initial_format"
+	 	    android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="0" />
+		</TableRow>
+		<TableRow  android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="center">
+			 <Button android:id="@+id/pause" android:layout_width="wrap_content" android:layout_height="wrap_content"
+        		android:onClick="doPauseTimer" android:text="Pause Timer" />
+			 <Button android:id="@+id/reset" android:layout_width="wrap_content" android:layout_height="wrap_content"
+        		android:onClick="doResetTimer" android:text="Reset Timer" />
+		</TableRow>
+		<TableRow android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="center">
+		    	<Button android:id="@+id/stop" android:layout_width="wrap_content" android:layout_height="wrap_content"
+        		android:onClick="doEndRoute" android:text="Stop/Finish Route" />
+		</TableRow>
+		
+	</TableLayout>
+	
+    <TableLayout android:id="@+id/trackRoute2" android:layout_width="fill_parent" android:layout_height="wrap_content"
+				android:gravity="center" android:paddingTop="10dp" android:paddingBottom="10dp">
+		
+		<TableRow android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="center">
+			 <EditText android:id="@+id/test" android:layout_width="100dp" android:layout_height="wrap_content"
+	         android:focusable="false" />
+		</TableRow>
+		<TableRow  android:layout_width="fill_parent" android:layout_height="wrap_content" android:gravity="center">
+			<Button android:id="@+id/goToMap" android:layout_width="fill_parent" android:layout_height="wrap_content"
+			        android:onClick="doGoToMap" android:text="Launch Map" />
+		</TableRow>
+	
+	</TableLayout>
  	
-     <EditText
-         android:id="@+id/test"
-         android:layout_width="100dp"
-         android:layout_height="wrap_content"
-         android:focusable="false" />
-     
-      <Button
-        android:id="@+id/goToMap"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="doGoToMap"
-        android:text="Launch Map" />
-     
 </LinearLayout>
