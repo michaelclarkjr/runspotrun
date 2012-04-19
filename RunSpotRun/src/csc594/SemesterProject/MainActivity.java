@@ -3,15 +3,26 @@ package csc594.SemesterProject;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 //import android.location.Location;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
-//import csc594.SemesterProject.MyGeoPoint.MyPointType;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 //import android.widget.Toast;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
-public class MainActivity extends Activity 
+public class MainActivity extends Activity implements OnClickListener
 {
+	private ListView listview;
+    private ArrayList mListItem;
+
+    
 	//private static final int GET_ROUTE = 1010;
 	ArrayList<MyGeoPoint> route;
 
@@ -20,29 +31,15 @@ public class MainActivity extends Activity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);        
-    }
-    
-    /*public void doGoToMap(View view) //temporarily.. moved to TrackRoute
-    {    	
-    	Intent launchMap = new Intent(this, RunMapActivity.class);
-		
-    	//Debug test hardcoded route
-    	ArrayList<MyGeoPoint> route = new ArrayList<MyGeoPoint>();
-		route.add(new MyGeoPoint(39312718,	-84281230, MyPointType.Start));
-		route.add(new MyGeoPoint(39313623,	-84282732));
-		route.add(new MyGeoPoint(39313847,	-84283859));
-		route.add(new MyGeoPoint(39314694,	-84284137));
-		route.add(new MyGeoPoint(39315831,	-84281509));
-		route.add(new MyGeoPoint(39318919,	-84279041));
-		route.add(new MyGeoPoint(39321500,	-84273033));
-		route.add(new MyGeoPoint(39319724,	-84271874));
-		route.add(new MyGeoPoint(39314188,	-84277571));
-		route.add(new MyGeoPoint(39312594,	-84280490, MyPointType.Stop));
-		
-    	launchMap.putExtra("Route", route);
-		startActivity(launchMap);
-    }*/
+        setContentView(R.layout.main);     
+        
+        listview = (ListView) findViewById(R.id.list_view);
+        ItemBO temp = new ItemBO();
+        mListItem = temp.getItems();
+        listview.setAdapter(new ListAdapter(this, R.id.list_view,
+                mListItem));
+
+    }    
     
     public void doStartRoute(View view)
     {    	
@@ -77,4 +74,147 @@ public class MainActivity extends Activity
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}*/
+    
+       
+    
+    
+    @Override
+	public void onClick(View arg0) {
+    	//do nothing
+	}
+    // ***ListAdapter***
+    private class ListAdapter extends ArrayAdapter { //--CloneChangeRequired
+        private ArrayList mList; //--CloneChangeRequired
+        private Context mContext;
+ 
+        public ListAdapter(Context context, int textViewResourceId,
+                ArrayList list) { //--CloneChangeRequired
+            super(context, textViewResourceId, list);
+            this.mList = list;
+            this.mContext = context;
+        }
+ 
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = convertView;
+            try {
+                if (view == null) {
+                    LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    view = vi.inflate(R.layout.listviewrow, null); //--CloneChangeRequired(list_item)
+                }
+                final ItemBO listItem = (ItemBO)mList.get(position); //--CloneChangeRequired
+                if (listItem != null) {
+                    // setting list_item views
+                    ((TextView)view.findViewById(R.id.tvDate))
+                         .setText(listItem.getDate());
+                    ((TextView)view.findViewById(R.id.tvTime))
+                    	.setText(listItem.getTime());
+                    ((TextView)view.findViewById(R.id.tvDistance))
+                    	.setText(listItem.getDistance().toString() + " Miles");
+                    view.setOnClickListener(new OnClickListener() {
+                        public void onClick(View arg0) { //--clickOnListItem
+//                        	Toast
+//	                  		  .makeText(MainActivity.this, "onClick list adapter",Toast.LENGTH_LONG)
+//	                  		  .show();
+                            Intent myIntent = new Intent(MainActivity.this, TrackRouteActivity.class);
+                            myIntent.putExtra("NAME", listItem.getName());
+                            startActivity(myIntent);
+//                            finish();
+                        }
+                    });
+                }
+            } catch (Exception e) {
+               // Log.i(Splash.ListAdapter.class.toString(), e.getMessage());
+            }
+            return view;
+        }
+    }	
+    public class ItemBO {
+        private String name;
+        private String date;
+        private String time;
+        private double distance;
+        
+        public String getName() { return name;  }
+        public void setName(String name) { this.name = name; }
+        
+        public String getDate() { return date; }
+        public void setDate(String _date) { this.date = _date; }
+        
+        public String getTime() { return time; }
+        public void setTime(String _time) { this.time = _time; }
+        
+        public Double getDistance() { return distance; }
+        public void setDistance(double _distance) { this.distance = _distance; }
+        
+        
+        // / TEMP DEBUG--------------------
+        public ArrayList getItems() {
+            ArrayList list = new ArrayList();
+            ItemBO item;
+     
+            item = new ItemBO();
+            item.setName("item 1");
+            item.setDate("4/1/12");
+            item.setTime("12:11 pm");
+            item.setDistance(1.4);
+            list.add(item);
+     
+            item = new ItemBO();
+            item.setName("item 1");
+            item.setDate("4/4/12");
+            item.setTime("2:11 pm");
+            item.setDistance(2.5);
+            list.add(item);
+     
+            item = new ItemBO();
+            item.setName("item 1");
+            item.setDate("4/6/12");
+            item.setTime("3:11 pm");
+            item.setDistance(4.0);
+            list.add(item);
+     
+            item = new ItemBO();
+            item.setName("item 1");
+            item.setDate("4/1/12");
+            item.setTime("12:11 pm");
+            item.setDistance(1.4);
+            list.add(item);
+     
+            item = new ItemBO();
+            item.setName("item 1");
+            item.setDate("4/4/12");
+            item.setTime("2:11 pm");
+            item.setDistance(2.5);
+            list.add(item);
+     
+            item = new ItemBO();
+            item.setName("item 1");
+            item.setDate("4/6/12");
+            item.setTime("3:11 pm");
+            item.setDistance(4.0);
+            list.add(item);
+            item = new ItemBO();
+            item.setName("item 1");
+            item.setDate("4/1/12");
+            item.setTime("12:11 pm");
+            item.setDistance(1.4);
+            list.add(item);
+     
+            item = new ItemBO();
+            item.setName("item 1");
+            item.setDate("4/4/12");
+            item.setTime("2:11 pm");
+            item.setDistance(2.5);
+            list.add(item);
+     
+            item = new ItemBO();
+            item.setName("item 1");
+            item.setDate("4/6/12");
+            item.setTime("3:11 pm");
+            item.setDistance(4.0);
+            list.add(item);
+            return list;
+        }
+    }
+
 }
