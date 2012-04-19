@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="fontRecentActivity" parent="@android:style/TextAppearance.Large">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textStyle">italic</item>
+        <item name="android:textColor">#FFFFFF</item>     
+    </style> 
+    <style name="fontlistDate" parent="@android:style/TextAppearance.Small">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style> 
+    <style name="fontlistTime" parent="@android:style/TextAppearance.Small">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">#FFFFFF</item>   
+    </style> 
+    <style name="fontlistDistance" parent="@android:style/TextAppearance.Medium">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">#FFFFFF</item>    
+    </style> 
+    <style name="fontlistTable">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:stretchColumns">*</item>
+        <item name="android:background">#B7B7B7</item>    
+    </style> 
+    <style name="fontlistTableRow">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">2dp</item>
+        <item name="android:background">#4B6C9E</item>    
+    </style>
+    
+    
+    <style name="mainView">
+       <item name="android:layout_width">fill_parent</item>
+       <item name="android:layout_height">fill_parent</item>
+       <item name="android:orientation">vertical</item>
+       <item name="android:background">#3A4F63</item>    
+    </style>
+    
+    
+    <style name="fontRouteLabel" parent="@android:style/TextAppearance.Medium">
+        <item name="android:layout_width">150dp</item>
+        <item name="android:layout_height">wrap_content</item>  
+    </style>
+    <style name="fontRouteInfo" parent="@android:style/TextAppearance.Small">
+        <item name="android:layout_width">100dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_vertical</item>
+    </style>
+    <style name="routeInfoRow">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">10dp</item>
+        <item name="android:background">#3A4F63</item>    
+    </style>
+    
+    <style name="routeInfoView">
+       <item name="android:layout_width">fill_parent</item>
+       <item name="android:layout_height">fill_parent</item>
+       <item name="android:orientation">vertical</item>
+       <item name="android:background">#3A4F63</item>    
+    </style>
+</resources>
