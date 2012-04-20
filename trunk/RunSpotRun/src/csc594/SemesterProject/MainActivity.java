@@ -8,6 +8,7 @@ import android.content.Intent;
 //import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -34,6 +35,7 @@ import android.widget.TableLayout;
 
 public class MainActivity extends Activity implements OnClickListener
 {
+	public static final int MENU_SETTINGS = Menu.FIRST+1;
 	private ListView listview;
     private ArrayList mListItem;
     
@@ -299,7 +301,16 @@ public class MainActivity extends Activity implements OnClickListener
 	} /* End MyLocationListener */
     
    
-    
+    @Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		menu
+		.add(Menu.NONE, MENU_SETTINGS, 0, "Preferences")
+		.setIntent(new Intent(this, PreferencesActivity.class))		
+		.setIcon(R.drawable.settings);
+		
+		return(super.onCreateOptionsMenu(menu));
+	}
+	
     @Override
 	public void onClick(View arg0) {
     	//do nothing
@@ -338,9 +349,9 @@ public class MainActivity extends Activity implements OnClickListener
 //                        	Toast
 //	                  		  .makeText(MainActivity.this, "onClick list adapter",Toast.LENGTH_LONG)
 //	                  		  .show();
-                            /*Intent myIntent = new Intent(MainActivity.this, TrackRouteActivity.class);
+							Intent myIntent = new Intent(MainActivity.this, RouteInfoActivity.class);
                             myIntent.putExtra("NAME", listItem.getName());
-                            startActivity(myIntent); */
+                            startActivity(myIntent);
 //                            finish();
                         }
                     });
