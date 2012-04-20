@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import android.app.AlertDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -16,6 +18,8 @@ import android.graphics.Point;
 import android.graphics.RectF;
 import android.location.Location;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.preference.PreferenceActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
@@ -30,6 +34,8 @@ import com.google.android.maps.Projection;
 
 public class RunMapActivity extends MapActivity 
 {
+	public static final int MENU_SETTINGS = Menu.FIRST+1;
+	
 	MapView mapView;
 	private List<Overlay> mapOverlays;
 	private Projection projection; 
@@ -141,26 +147,38 @@ public class RunMapActivity extends MapActivity
 //        currentLoc.disableMyLocation();
     }
     
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-//        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.layout.mapsmenu, menu);
-//        return true;
-    	menu
-		.add(Menu.NONE, Menu.FIRST+2, 1, "Reset");
-		//.setIcon(R.drawable.ic_menu_refresh);
-
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
 		menu
-			.add(Menu.NONE, Menu.FIRST+1, 0, "Add");
-			//.setIcon(R.drawable.ic_menu_add);
-
+		.add(Menu.NONE, MENU_SETTINGS, 0, "Preferences")
+		.setIntent(new Intent(this, PreferencesActivity.class))		
+		.setIcon(R.drawable.settings);
+		
 		return(super.onCreateOptionsMenu(menu));
-    }
+	}
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+////        MenuInflater inflater = getMenuInflater();
+////        inflater.inflate(R.layout.mapsmenu, menu);
+////        return true;
+//    	menu
+//		.add(Menu.NONE, Menu.FIRST+2, 1, "Reset");
+//		//.setIcon(R.drawable.ic_menu_refresh);
+//
+//		menu
+//			.add(Menu.NONE, Menu.FIRST+1, 0, "Add");
+//			//.setIcon(R.drawable.ic_menu_add);
+//
+//		return(super.onCreateOptionsMenu(menu));
+//    }
 
 class MyOverlay extends Overlay
-{
+{		
+	//SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);//getApplicationContext());
 	int LineColor = Color.RED;
-	int LineWidth = 2;
+	int LineWidth = 2;//sharedPrefs.getInt(getString(R.string.linewidthKey), 2);
+			
+	//sharedPrefs.getInt(getString(R.));
 	
 	//list of points to display
 	List<MyGeoPoint> points;
@@ -174,6 +192,20 @@ class MyOverlay extends Overlay
     public MyOverlay(List<MyGeoPoint> route)
     {
     	this.points = route;
+    	try
+    	{
+    	//SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplication());//getApplicationContext());
+    	//int LineColor = Color.RED;
+    	//LineWidth = sharedPrefs.getInt("linewidth", 2);
+    	} catch (Exception ex) {					
+			new AlertDialog.Builder(RunMapActivity.this)
+	  		  .setTitle("Could not add item to Database")
+	  		  .setMessage(String.format("%s", ex.getMessage()))
+	  		  .setNeutralButton("OK", null)
+	  		  .show();
+			return;
+		}
+    	
     }   
 
     //Draw method - fired when drawing needs to change

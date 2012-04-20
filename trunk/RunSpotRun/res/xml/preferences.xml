@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory 
+        android:title="Route"
+        android:key="route">   
+             
+        <ListPreference 
+            android:key="@string/intervalKey"
+            android:summary="The interval at which the GPS is polled during a jog"
+            android:title="Interval"
+            android:defaultValue="1" 
+            android:entries="@array/updateInterval"
+            android:entryValues="@array/updateIntervalValues" /> 
+    </PreferenceCategory>
+
+    <PreferenceCategory 
+        android:title="Map"
+        android:key="map">
+
+        <ListPreference 
+            android:key="@string/linecolorKey"
+            android:summary="The color of the lines used to draw a route with"
+            android:title="Color"
+            android:defaultValue="3" 
+            android:entries="@array/lineColor"
+            android:entryValues="@array/lineColorValues" />
+        
+        <ListPreference 
+            android:key="@string/linewidthKey"
+            android:summary="The width of the lines used to draw a route with"
+            android:title="Width"
+            android:defaultValue="2" 
+            android:entries="@array/lineWidth"
+            android:entryValues="@array/lineWidthValues" />
+        
+    </PreferenceCategory>
+    
+    <PreferenceCategory 
+        android:title="Email"
+        android:key="email">
+        
+        <EditTextPreference
+            android:key="@string/emailKey"
+            android:title="Email Address" 
+            android:summary="The email address that your routes will be sent to"
+            android:dialogTitle="Email Address"
+            android:dialogMessage="Enter your email address"    
+            android:defaultValue="" />
+
+    </PreferenceCategory>
+    
+</PreferenceScreen>
