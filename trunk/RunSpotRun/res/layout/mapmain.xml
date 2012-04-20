@@ -7,23 +7,14 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="horizontal" android:layout_width="fill_parent"
         android:layout_height="wrap_content">
-
-        <Button android:id="@+id/sat" android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:text="Satellite"
-            android:onClick="myClickHandler" android:padding="8px" />
-
-        <Button android:id="@+id/street" android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:text="Street"
-            android:onClick="myClickHandler" android:padding="8px" />
-
-        <Button android:id="@+id/traffic" android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:text="Traffic"
-            android:onClick="myClickHandler" android:padding="8px" />
-
-        <Button android:id="@+id/normal" android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:text="Normal"
-            android:onClick="myClickHandler" android:padding="8px" />
-
+        <ToggleButton
+            android:id="@+id/toggleSatellite"
+            android:layout_width="75dp"
+            android:layout_height="wrap_content"
+            android:text="Satellite"
+            android:textOff="Normal"
+            android:textOn="Satellite"
+            android:onClick="onSatelliteToggle" />
     </LinearLayout>
 
      <com.google.android.maps.MapView
