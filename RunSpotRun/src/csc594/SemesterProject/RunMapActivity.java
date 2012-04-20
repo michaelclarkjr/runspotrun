@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.View;
+import android.widget.ToggleButton;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
@@ -52,7 +53,7 @@ public class RunMapActivity extends MapActivity
         try 
         {
         	//setup map
-			mapView = (MapView) findViewById(R.id.mapView);
+			mapView = (MapView)findViewById(R.id.mapView);
 			mapView.setBuiltInZoomControls(true); //seems to do same thing as above
 			//mapView.setSatellite(true);
 			
@@ -77,29 +78,9 @@ public class RunMapActivity extends MapActivity
 		}
     }
     
-    public void myClickHandler(View target) {
-        switch(target.getId()) {
-        case R.id.sat:
-            mapView.setSatellite(true);
-            break;
-        case R.id.street:
-            mapView.setStreetView(true);
-            break;
-        case R.id.traffic:
-            mapView.setTraffic(true);
-            break;
-        case R.id.normal:
-            mapView.setSatellite(false);
-            mapView.setStreetView(false);
-            mapView.setTraffic(false);
-            break;
-        default:
-        	break;
-        }
-
-        // The following line should not be required but it is,
-        // at least up til Froyo.
-        //mapView.postInvalidateDelayed(2000);        
+    public void onSatelliteToggle(View toggle)
+    {
+    	mapView.setSatellite(((ToggleButton)toggle).isChecked());    	 
     }
     
     @Override
@@ -111,7 +92,8 @@ public class RunMapActivity extends MapActivity
     public void onResume()
     {
         super.onResume();
-        
+        //set toggle if satellite is on
+        ((ToggleButton)findViewById(R.id.toggleSatellite)).setChecked(mapView.isSatellite());
 //    	try
 //    	{
     		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(RunMapActivity.this);
@@ -151,10 +133,7 @@ public class RunMapActivity extends MapActivity
 	}
 
 class MyOverlay extends Overlay
-{		
-	//int LineColor = Color.RED;
-	//int LineWidth = 2;
-				
+{						
 	//list of points to display
 	List<MyGeoPoint> points;
 	//last point selected by user tap
