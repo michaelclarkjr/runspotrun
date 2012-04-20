@@ -1,68 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/mainView" >
-
-    <TableRow
-        android:id="@+id/tableRowDate"        
-        style="@style/routeInfoRow" >
-        <TextView
-            android:id="@+id/textView1"
-            style="@style/fontRouteLabel"            
-            android:text="Duration" />
-        <TextView
-            android:id="@+id/tvRouteDate"
-            style="@style/fontRouteInfo"
-            android:text="12/1/2012" />
-    </TableRow>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	style="@style/mainView"
+	android:orientation="vertical" >
+	<TableLayout
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content" >
+	    <TableRow
+	        android:id="@+id/tableRowDate"        
+	        style="@style/routeInfoRow" >
+	        <TextView
+	            android:id="@+id/textView1"
+	            style="@style/fontRouteLabel"            
+	            android:text="Date" />
+	        <TextView
+	            android:id="@+id/tvRouteDate"
+	            style="@style/fontRouteInfo"
+	            android:text="12/1/2012" />
+	    </TableRow>
     
-    <TableRow
-        android:id="@+id/tableRowDuration"
-        style="@style/routeInfoRow" >
-        <TextView
-            android:id="@+id/textView1"
-            style="@style/fontRouteLabel"            
-            android:text="Duration" />
-        <TextView
-            android:id="@+id/tvRouteDuration"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="1 Hour 2 Minutes" />
-    </TableRow>
+	    <TableRow
+	        android:id="@+id/tableRowDuration"
+	        style="@style/routeInfoRow" >
+	        <TextView
+	            android:id="@+id/textView1"
+	            style="@style/fontRouteLabel"            
+	            android:text="Duration" />
+	        <TextView
+	            android:id="@+id/tvRouteDuration"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="1 Hour 2 Minutes" />
+	    </TableRow>
 
-    <TableRow
-        android:id="@+id/tableRowDistance"
-        style="@style/routeInfoRow" >
-        <TextView
-            android:id="@+id/textView3"
-            style="@style/fontRouteLabel"
-            android:text="Distance" />
-        <TextView
-            android:id="@+id/tvRouteDistance"
-            style="@style/fontRouteInfo"
-            android:text="1.2 Miles" />
-    </TableRow>
+	    <TableRow
+	        android:id="@+id/tableRowDistance"
+	        style="@style/routeInfoRow" >
+	        <TextView
+	            android:id="@+id/textView3"
+	            style="@style/fontRouteLabel"
+	            android:text="Distance" />
+	        <TextView
+	            android:id="@+id/tvRouteDistance"
+	            style="@style/fontRouteInfo"
+	            android:text="1.2 Miles" />
+	    </TableRow>
 
-    <TableRow
-        android:id="@+id/tableRowAvgSpeed"
-        style="@style/routeInfoRow" >
-        <TextView
-            android:id="@+id/textView5"
-            style="@style/fontRouteLabel"
-            android:text="Average Speed" />
-        <TextView
-            android:id="@+id/tvRouteAvgSpeed"
-            style="@style/fontRouteInfo"
-            android:text="5.4 MPH" />
-    </TableRow>
-    <TableRow
-        android:id="@+id/tableRowMapIt"
+	    <TableRow
+	        android:id="@+id/tableRowAvgSpeed"
+	        style="@style/routeInfoRow" >
+	        <TextView
+	            android:id="@+id/textView5"
+	            style="@style/fontRouteLabel"
+	            android:text="Average Speed" />
+	        <TextView
+	            android:id="@+id/tvRouteAvgSpeed"
+	            style="@style/fontRouteInfo"
+	            android:text="5.4 MPH" />
+	    </TableRow>
+	    <TableRow
+	        android:id="@+id/tableRowMapIt"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:gravity="center" >
+	
+	        <Button
+	            android:id="@+id/MapIt"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:onClick="doMapIt"
+	            android:text="Map It!" />
+	    </TableRow>
+  
+	</TableLayout>
+ 	<RelativeLayout 
+        android:id="@+id/InnerRelativeLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center" >
+        android:layout_alignParentBottom="true" >   
         <Button
-            android:id="@+id/MapIt"
-            android:layout_width="wrap_content"
+            android:id="@+id/btnEmail"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:text="Map It!" />
-    </TableRow>   
-</TableLayout>
+            android:layout_alignParentLeft="true"
+            android:onClick="doEmailClick"
+            android:text="Email Route" />
+        <Button
+            android:id="@+id/btnDelete"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true" 
+            android:onClick="doDeleteClick"
+            android:text="Delete" />
+    </RelativeLayout>
+</RelativeLayout>
