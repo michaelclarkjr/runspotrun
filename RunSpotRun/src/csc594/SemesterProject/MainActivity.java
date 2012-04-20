@@ -36,6 +36,7 @@ import android.widget.TableLayout;
 public class MainActivity extends Activity implements OnClickListener
 {
 	public static final int MENU_SETTINGS = Menu.FIRST+1;
+	public static final int MENU_ABOUT = Menu.FIRST+2;
 	private ListView listview;
     private ArrayList mListItem;
     
@@ -88,9 +89,12 @@ public class MainActivity extends Activity implements OnClickListener
 		curDate = fmt1.format(cal.getTime());
 		routeName = "testRoute";
 		curDist = "1.1"; //test dist
-				
+		
+//		try
+//        {
 		mlocMgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         route = new ArrayList<MyGeoPoint>();
+        
         
         Location startLoc = mlocMgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         if (startLoc == null)
@@ -112,6 +116,10 @@ public class MainActivity extends Activity implements OnClickListener
              			//provider, minTime in ms, minDistance in meters, Location Listener
              					//minTime minDistance - hints not rules *might be better to use something else for set intervals*
         }
+//        }catch (Exception e) {
+//            
+//         }
+       
 
     }  
         
@@ -262,44 +270,33 @@ public class MainActivity extends Activity implements OnClickListener
 	}
 	
 	public class MyLocationListener implements LocationListener
-
 	{
-
 		@Override
 		public void onLocationChanged(Location loc)
 		{
 			getRoutePointData(loc);
 			addToRoute();	
-		}
+		}	
 	
-	
-		@Override
-	
+		@Override	
 		public void onProviderDisabled(String provider)
 		{
-
 	
-		}
-	
+		}	
 	
 		@Override
 		public void onProviderEnabled(String provider)
-		{
-	
+		{	
 
-		}
-	
+		}	
 	
 		@Override
-		public void onStatusChanged(String provider, int status, Bundle extras)
-	
-		{
-	
+		public void onStatusChanged(String provider, int status, Bundle extras)	
+		{	
 	
 		}
-
 	} /* End MyLocationListener */
-    
+   
    
     @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -307,6 +304,11 @@ public class MainActivity extends Activity implements OnClickListener
 		.add(Menu.NONE, MENU_SETTINGS, 0, "Preferences")
 		.setIntent(new Intent(this, PreferencesActivity.class))		
 		.setIcon(R.drawable.settings);
+		
+		menu
+		.add(Menu.NONE, MENU_ABOUT, 1, "About")
+		.setIntent(new Intent(this, PreferencesActivity.class))		
+		.setIcon(R.drawable.about);
 		
 		return(super.onCreateOptionsMenu(menu));
 	}
