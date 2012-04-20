@@ -11,20 +11,57 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-//import android.widget.Toast;
+
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+//Track Route
+import csc594.SemesterProject.MyGeoPoint.MyPointType;
+
+
+import java.util.Calendar;
+import java.text.SimpleDateFormat;
+import android.os.SystemClock;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Chronometer;
+import android.widget.TableLayout;
+
 public class MainActivity extends Activity implements OnClickListener
 {
 	private ListView listview;
     private ArrayList mListItem;
+    
+    //TrackRoute
+    private LocationManager mlocMgr;
+    private LocationListener mlocListener;
+    private ArrayList<MyGeoPoint> route;
+    
+    private Button pauseBtn;
+    private Button startBtn;
+    private Button stopBtn;
+    private boolean useHardCodedPts;
+    
+    private Chronometer chronTimer;
+    private long timeWhenStopped = 0;
+    private Calendar cal = Calendar.getInstance();
+    private SimpleDateFormat fmt1 = new SimpleDateFormat("MM/dd/yyyy");
+    private SimpleDateFormat fmt2 = new SimpleDateFormat("hh:mm a");
+    
+	private int latitude;
+    private int longitude;
+    private String curDate;
+    private String routeName;
+    private String curTime;
+    private String curDist;
 
     
 	//private static final int GET_ROUTE = 1010;
-	ArrayList<MyGeoPoint> route;
 
     /** Called when the activity is first created. */
     @Override
@@ -38,50 +75,236 @@ public class MainActivity extends Activity implements OnClickListener
         mListItem = temp.getItems();
         listview.setAdapter(new ListAdapter(this, R.id.list_view,
                 mListItem));
+        
+        //Track Route
+        startBtn = (Button)findViewById(R.id.start);
+        stopBtn = (Button)findViewById(R.id.stop);
+        stopBtn.setVisibility(View.GONE); 
+		pauseBtn = (Button)findViewById(R.id.pause);
+		
+		chronTimer = (Chronometer)findViewById(R.id.timer);
+		curDate = fmt1.format(cal.getTime());
+		routeName = "testRoute";
+		curDist = "1.1"; //test dist
+				
+		mlocMgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        route = new ArrayList<MyGeoPoint>();
+        
+        Location startLoc = mlocMgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (startLoc == null)
+        {
+            //startLoc = mlocMgr  //alt. way to get to later
+                   // .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        	useHardCodedPts = true;
+        	
+        }
+        else //else if still null could alert usr to turn on gps/wifi (code in bk to send usr to their settings), no signal...
+        {		//currently assume got a location from GPS - so it's on - using GPS
+        	 useHardCodedPts = false;
+        	 
+        	 getRoutePointData(startLoc);
+        	 
+        	 mlocListener = new MyLocationListener();
+     		
+             mlocMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mlocListener);
+             			//provider, minTime in ms, minDistance in meters, Location Listener
+             					//minTime minDistance - hints not rules *might be better to use something else for set intervals*
+        }
 
-    }    
+    }  
+        
+        
+    /* Gets current data about a point in the route: (int) latitude, (int) longitude, (string) time, 
+  	  (string) distance, (string) name (as used by the MyGeoPoint Class).
+  	  */
+  	private void getRoutePointData(Location loc)
+  	{
+  		double lat =  loc.getLatitude();
+  		double lng = loc.getLongitude();
+  		
+  		latitude = (int) (lat * 1E6); //compatible with maps api
+  		longitude = (int) (lng * 1E6);
+  	
+  		cal = Calendar.getInstance(); //update time
+  		curTime = curDate + " " + fmt2.format(cal.getTime()); //+ " " + String.valueOf(latitude) + " " + String.valueOf(longitude);
+  		//Toast.makeText( getApplicationContext(),curTime,Toast.LENGTH_SHORT).show();
+  	}
     
+  	
     public void doStartRoute(View view)
-    {    	
-    	Intent startTracking = new Intent(this, TrackRouteActivity.class);
-    	
-    	//String Text = "Started Tracking Your Route";
-    		//Toast.makeText( getApplicationContext(),Text,Toast.LENGTH_SHORT).show();
-	
-		//startActivityForResult(startTracking,GET_ROUTE);
-    	startActivity(startTracking);
+    {
+    	chronTimer.setBase(SystemClock.elapsedRealtime());
+		chronTimer.start();
+		startBtn.setVisibility(View.GONE); //gone - layout no longer takes up space
+		stopBtn.setVisibility(View.VISIBLE); 
+		
+		 if(!useHardCodedPts)
+		 {
+			 curTime = curDate + " " + fmt2.format(cal.getTime());
+			 route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Start));
+		 }
+		 else
+		 {
+			 route.add(new MyGeoPoint(39312718,	-84281230, MyPointType.Start));
+			 addToRoute(); //fill in the rest - otherwise in onLocationChanged()
+		 }
     }
     
-   /* public void doEndRoute(View view) //temporarily.. moved to TrackRoute
-    {    	
-		finishActivity(GET_ROUTE); 
-    	
-    	String Text = "Stopped Tracking Your Route";
-    		Toast.makeText( getApplicationContext(),Text,Toast.LENGTH_SHORT).show();
-    }*/
-    
-	/*@Override
-	protected void onActivityResult(int requestCode,
-							int resultCode, Intent data) 
+    private void addToRoute()
 	{
-		if (requestCode == GET_ROUTE && resultCode == RESULT_OK) 
+		 if(!useHardCodedPts)
+		 {
+			 route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Normal));
+		 }
+		 else
+		 {
+			 route.add(new MyGeoPoint(39313623,	-84282732));
+			 route.add(new MyGeoPoint(39313847,	-84283859));
+			 route.add(new MyGeoPoint(39314694,	-84284137));
+			 route.add(new MyGeoPoint(39315831,	-84281509));
+			 route.add(new MyGeoPoint(39318919,	-84279041));
+			 route.add(new MyGeoPoint(39321500,	-84273033));
+			 route.add(new MyGeoPoint(39319724,	-84271874));
+			 route.add(new MyGeoPoint(39314188,	-84277571));
+		 }
+	}
+	
+	private void endRoute()
+	{
+		chronTimer.stop();
+
+		if(!useHardCodedPts)
 		{
-			//get route data
+			cal = Calendar.getInstance(); //update time
+			curTime = curDate + " " + fmt2.format(cal.getTime());
+			route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Stop));
+			System.out.println("STOP");
+			mlocMgr.removeUpdates(mlocListener); //unregister
 		}
-		else if (resultCode == RESULT_OK) 
+		else
 		{
-			//do nothing
+			route.add(new MyGeoPoint(39312594,	-84280490, MyPointType.Stop));
 		}
-		super.onActivityResult(requestCode, resultCode, data);
-	}*/
+	}
+	
+	private String getElapsedTimeString() 
+	{       
+		long elapsedTime = SystemClock.elapsedRealtime() - chronTimer.getBase();
+		
+	    //String format = String.format("%%0%dd", 2);  
+	    elapsedTime = elapsedTime / 1000;  
+	    String seconds = String.format("%s second(s)", elapsedTime % 60);  
+	    String minutes = String.format("%s minute(s)", (elapsedTime % 3600) / 60);  
+	    String hours = String.format("%s hours(s)", elapsedTime / 3600);  
+	    String time =  hours + " " + minutes + " " + seconds;  
+	    return time;  
+	}  
+	
+	public void doEndRoute(View view)
+	{    	
+		endRoute();
+	}
+	
+	private void doPauseResetTimer(String action)
+	{
+		if(action.equals("reset"))
+		{
+			chronTimer.setBase(SystemClock.elapsedRealtime());
+			timeWhenStopped = 0;
+		}
+		else if((action.equals("pause")) && (pauseBtn.getText().equals("Pause")))
+		{
+			timeWhenStopped = chronTimer.getBase() - SystemClock.elapsedRealtime();
+			chronTimer.stop();
+			pauseBtn.setText("Resume");
+		}
+		else //resume
+		{
+			chronTimer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
+			chronTimer.start();
+			pauseBtn.setText("Pause");
+		}
+		
+	}
+	public void doResetTimer(View view)
+	{    	
+		doPauseResetTimer("reset");
+	}
+	 
+	
+	public void doPauseTimer(View view)
+	{    	
+		doPauseResetTimer("pause");
+	}
+	
+	public void doGoToMap(View view)
+	{    	
+	    Intent launchMap = new Intent(this, RunMapActivity.class);
+	    launchMap.putExtra("Route", route);
+		startActivity(launchMap);
+	}
+	 
+	 
+	@Override
+	public void onResume() 
+	{
+		super.onResume();  //not sure on this yet
+		//mlocMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mlocListener);
+	}
+	
+	@Override
+	public void onPause()
+	{
+		super.onPause();
+		//mlocMgr.removeUpdates(mlocListener);
+	}
+	
+	public class MyLocationListener implements LocationListener
+
+	{
+
+		@Override
+		public void onLocationChanged(Location loc)
+		{
+			getRoutePointData(loc);
+			addToRoute();	
+		}
+	
+	
+		@Override
+	
+		public void onProviderDisabled(String provider)
+		{
+
+	
+		}
+	
+	
+		@Override
+		public void onProviderEnabled(String provider)
+		{
+	
+
+		}
+	
+	
+		@Override
+		public void onStatusChanged(String provider, int status, Bundle extras)
+	
+		{
+	
+	
+		}
+
+	} /* End MyLocationListener */
     
-       
-    
+   
     
     @Override
 	public void onClick(View arg0) {
     	//do nothing
 	}
+    
     // ***ListAdapter***
     private class ListAdapter extends ArrayAdapter { //--CloneChangeRequired
         private ArrayList mList; //--CloneChangeRequired
@@ -115,9 +338,9 @@ public class MainActivity extends Activity implements OnClickListener
 //                        	Toast
 //	                  		  .makeText(MainActivity.this, "onClick list adapter",Toast.LENGTH_LONG)
 //	                  		  .show();
-                            Intent myIntent = new Intent(MainActivity.this, TrackRouteActivity.class);
+                            /*Intent myIntent = new Intent(MainActivity.this, TrackRouteActivity.class);
                             myIntent.putExtra("NAME", listItem.getName());
-                            startActivity(myIntent);
+                            startActivity(myIntent); */
 //                            finish();
                         }
                     });
