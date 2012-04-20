@@ -10,12 +10,6 @@
     <string name="MAPAPI_TOM_RELEASE">0m6pT8NVWcyhvWg_t8_-hczplZWgSxQk85X6n8w</string>
 	<string name="MAPAPI_LORA_DEBUG">0naW5_sRyRGBfE9xxfLfNHgGqMwwaScuCbp6xDQ</string>
 	
-	<string name="intervalKey">interval</string>
-	<string name="linecolorKey">linecolor</string>
-	<string name="linewidthKey">linewidth</string>
-	<string name="emailKey">email</string>
-	
-	
 	<string-array name="updateInterval">
         <item name="1">Every 1 second</item>
         <item name="5">Every 5 seconds</item>
@@ -61,10 +55,10 @@
     </string-array>
     
     <string-array name="lineColorValues">
-        <item name="1">Black</item>
-        <item name="2">White</item>
-        <item name="3">Red</item>
-        <item name="4">Blue</item>
-        <item name="5">Green</item>
+        <item name="1">#FF000000</item>
+        <item name="2">#FFFFFFFF</item>
+        <item name="3">#FFFF0000</item>
+        <item name="4">#FF0000FF</item>
+        <item name="5">#FF00FF00</item>
     </string-array>
 </resources>

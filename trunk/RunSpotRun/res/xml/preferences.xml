@@ -7,7 +7,7 @@
         android:key="route">   
              
         <ListPreference 
-            android:key="@string/intervalKey"
+            android:key="intervalKey"
             android:summary="The interval at which the GPS is polled during a jog"
             android:title="Interval"
             android:defaultValue="1" 
@@ -20,15 +20,15 @@
         android:key="map">
 
         <ListPreference 
-            android:key="@string/linecolorKey"
+            android:key="linecolorKey"
             android:summary="The color of the lines used to draw a route with"
             android:title="Color"
-            android:defaultValue="3" 
+            android:defaultValue="Red" 
             android:entries="@array/lineColor"
             android:entryValues="@array/lineColorValues" />
         
         <ListPreference 
-            android:key="@string/linewidthKey"
+            android:key="linewidthKey"
             android:summary="The width of the lines used to draw a route with"
             android:title="Width"
             android:defaultValue="2" 
@@ -42,7 +42,7 @@
         android:key="email">
         
         <EditTextPreference
-            android:key="@string/emailKey"
+            android:key="emailKey"
             android:title="Email Address" 
             android:summary="The email address that your routes will be sent to"
             android:dialogTitle="Email Address"

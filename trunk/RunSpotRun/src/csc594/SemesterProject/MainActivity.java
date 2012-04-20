@@ -307,7 +307,7 @@ public class MainActivity extends Activity implements OnClickListener
 		
 		menu
 		.add(Menu.NONE, MENU_ABOUT, 1, "About")
-		.setIntent(new Intent(this, PreferencesActivity.class))		
+		.setIntent(new Intent(this, AboutActivity.class))		
 		.setIcon(R.drawable.about);
 		
 		return(super.onCreateOptionsMenu(menu));
