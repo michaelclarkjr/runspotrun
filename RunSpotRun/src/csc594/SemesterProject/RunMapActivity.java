@@ -16,14 +16,10 @@ import android.graphics.Paint.Style;
 import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.RectF;
-import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.preference.PreferenceActivity;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
@@ -34,7 +30,11 @@ import com.google.android.maps.Projection;
 
 public class RunMapActivity extends MapActivity 
 {
+	public static int LineColor = Color.RED; 
+	public static int LineWidth = 2;
+	
 	public static final int MENU_SETTINGS = Menu.FIRST+1;
+	public static final int MENU_ABOUT = Menu.FIRST+2;
 	
 	MapView mapView;
 	private List<Overlay> mapOverlays;
@@ -107,36 +107,25 @@ public class RunMapActivity extends MapActivity
         return false;
     }
     
-  //whether or not the current
-    //device location is being displayed
-  /*  @Override
-    protected boolean isLocationDisplayed() {
-    	//return true; 
-    	return currentLoc.isMyLocationEnabled();
-    }*/
-    
-    //Testing
-    private void showLocationData(Location loc)
-    {
-    	Toast.makeText(getBaseContext(),
-            "New location latitude [" + 
-            loc.getLatitude() +
-            "] longitude [" + 
-            loc.getLongitude()+"]" + "Time [" 
-            + loc.getTime() + "]",
-            Toast.LENGTH_SHORT).show();
-    }
-    
     @Override
     public void onResume()
     {
         super.onResume();
-//        currentLoc.enableMyLocation();
-//        currentLoc.runOnFirstFix(new Runnable() {
-//            public void run() {
-//                mapController.setCenter(currentLoc.getMyLocation());
-//            }								//this returns a GeoPoint
-//        });
+        
+//    	try
+//    	{
+    		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(RunMapActivity.this);
+    		
+    		RunMapActivity.LineColor = Color.parseColor(sharedPrefs.getString("linecolorKey", "#FFFF0000"));
+    		RunMapActivity.LineWidth =Integer.parseInt(sharedPrefs.getString("linewidthKey", "2"));
+//    	} catch (Exception ex) {					
+//			new AlertDialog.Builder(RunMapActivity.this)
+//	  		  .setTitle("Could not add item to Database")
+//	  		  .setMessage(String.format("%s", ex.getMessage()))
+//	  		  .setNeutralButton("OK", null)
+//	  		  .show();
+//			return;
+//		}
     }
 
     
@@ -144,7 +133,6 @@ public class RunMapActivity extends MapActivity
     public void onPause()
     {
         super.onPause();
-//        currentLoc.disableMyLocation();
     }
     
 	@Override
@@ -154,32 +142,19 @@ public class RunMapActivity extends MapActivity
 		.setIntent(new Intent(this, PreferencesActivity.class))		
 		.setIcon(R.drawable.settings);
 		
+		menu
+		.add(Menu.NONE, MENU_ABOUT, 1, "About")
+		.setIntent(new Intent(this, AboutActivity.class))		
+		.setIcon(R.drawable.about);
+		
 		return(super.onCreateOptionsMenu(menu));
 	}
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-////        MenuInflater inflater = getMenuInflater();
-////        inflater.inflate(R.layout.mapsmenu, menu);
-////        return true;
-//    	menu
-//		.add(Menu.NONE, Menu.FIRST+2, 1, "Reset");
-//		//.setIcon(R.drawable.ic_menu_refresh);
-//
-//		menu
-//			.add(Menu.NONE, Menu.FIRST+1, 0, "Add");
-//			//.setIcon(R.drawable.ic_menu_add);
-//
-//		return(super.onCreateOptionsMenu(menu));
-//    }
 
 class MyOverlay extends Overlay
 {		
-	//SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);//getApplicationContext());
-	int LineColor = Color.RED;
-	int LineWidth = 2;//sharedPrefs.getInt(getString(R.string.linewidthKey), 2);
-			
-	//sharedPrefs.getInt(getString(R.));
-	
+	//int LineColor = Color.RED;
+	//int LineWidth = 2;
+				
 	//list of points to display
 	List<MyGeoPoint> points;
 	//last point selected by user tap
@@ -192,20 +167,6 @@ class MyOverlay extends Overlay
     public MyOverlay(List<MyGeoPoint> route)
     {
     	this.points = route;
-    	try
-    	{
-    	//SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplication());//getApplicationContext());
-    	//int LineColor = Color.RED;
-    	//LineWidth = sharedPrefs.getInt("linewidth", 2);
-    	} catch (Exception ex) {					
-			new AlertDialog.Builder(RunMapActivity.this)
-	  		  .setTitle("Could not add item to Database")
-	  		  .setMessage(String.format("%s", ex.getMessage()))
-	  		  .setNeutralButton("OK", null)
-	  		  .show();
-			return;
-		}
-    	
     }   
 
     //Draw method - fired when drawing needs to change
@@ -217,11 +178,11 @@ class MyOverlay extends Overlay
         
         Paint mPaint = new Paint();
         mPaint.setDither(true);
-        mPaint.setColor(LineColor);
+        mPaint.setColor(RunMapActivity.LineColor);
         mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
-        mPaint.setStrokeWidth(LineWidth);
+        mPaint.setStrokeWidth(RunMapActivity.LineWidth);
 
         Point p1 = new Point();
         Point p2 = new Point();
@@ -234,29 +195,32 @@ class MyOverlay extends Overlay
 	
 	        path.moveTo(p1.x,p1.y);
 	        path.lineTo(p2.x,p2.y);
+	    }  
+        
+        //add start/stop markers
+        int xOffset, yOffset;
+        Bitmap bmp;
+        
+		//start marker
+		projection.toPixels(points.get(0).getPoint(), p1);
+		//offset into bitmap
+		xOffset = 16 + 8;//not sure why another half offset is needed...
+		yOffset = 32 + 16;
+		//---add the marker---
+		bmp = BitmapFactory.decodeResource(
+		    getResources(), R.drawable.start_marker);            
+		canvas.drawBitmap(bmp, p1.x - xOffset, p1.y - yOffset, null); 
 	        
-	        //draw start/stop markers
-	        if(i==0)
-	        {//start marker
-	        	//offset into bitmp
-		        int xOffset = 16;
-		        int yOffset = 32;
-	            //---add the marker---
-	            Bitmap bmp = BitmapFactory.decodeResource(
-	                getResources(), R.drawable.start_marker);            
-	            canvas.drawBitmap(bmp, p1.x - xOffset, p1.y - yOffset, null); 
-	        }
-	        else if(i==points.size() - 2)
-	        {//stop marker
-	        	//offset into bitmp
-		        int xOffset = 9;
-		        int yOffset = 32;
-	            //---add the marker---
-	            Bitmap bmp = BitmapFactory.decodeResource(
-	                getResources(), R.drawable.stop_marker);        
-	            canvas.drawBitmap(bmp, p2.x - xOffset, p2.y - yOffset, null); 
-	        }
-        }
+		//stop marker
+		projection.toPixels(points.get(points.size() -1).getPoint(), p1);
+		//offset into bitmap
+		xOffset = 9 + 8;
+		yOffset = 32 + 16;
+		//---add the marker---
+		bmp = BitmapFactory.decodeResource(
+		    getResources(), R.drawable.stop_marker);        
+		    canvas.drawBitmap(bmp, p1.x - xOffset, p1.y - yOffset, null); 
+	                
         //this will draw the points to the screen
         canvas.drawPath(path, mPaint);
         
