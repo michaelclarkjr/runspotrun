@@ -23,7 +23,7 @@
             android:key="linecolorKey"
             android:summary="The color of the lines used to draw a route with"
             android:title="Color"
-            android:defaultValue="Red" 
+            android:defaultValue="#FFFF0000" 
             android:entries="@array/lineColor"
             android:entryValues="@array/lineColorValues" />
         
