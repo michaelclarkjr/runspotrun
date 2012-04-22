@@ -120,6 +120,19 @@ public class MainActivity extends Activity implements OnClickListener
 	           			
     }  /*end of onCreate() */
     
+    
+    @Override
+ 	public void onResume() 
+ 	{
+ 		super.onResume();  //not sure on this yet
+ 	}
+ 	
+ 	@Override
+ 	public void onPause()
+ 	{
+ 		super.onPause();
+ 	}
+    
     //Chronotimer
     private void doPauseResetTimer(String action)
 	{
@@ -266,8 +279,7 @@ public class MainActivity extends Activity implements OnClickListener
 	
 		cal = Calendar.getInstance(); //update time
 		curTime = curDate + " " + fmt2.format(cal.getTime()); 
-	}
-    
+	}    
     	 
 	private void addToRoute()
 	{
@@ -456,19 +468,6 @@ public class MainActivity extends Activity implements OnClickListener
             list.add(item);
             return list;
         }
-    }
-    
-    @Override
- 	public void onResume() 
- 	{
- 		super.onResume();  //not sure on this yet
- 	}
- 	
- 	@Override
- 	public void onPause()
- 	{
- 		super.onPause();
- 	}
- 	
+    } 	
 }
 
