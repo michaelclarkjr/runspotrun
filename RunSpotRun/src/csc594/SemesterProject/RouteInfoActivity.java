@@ -70,7 +70,7 @@ public class RouteInfoActivity extends Activity {
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(RouteInfoActivity.this);
 		String email = sharedPrefs.getString("emailKey", "");
 		
-		if(email.isEmpty() || !email.contains("@"))
+		if(email.length() == 0 || !email.contains("@")) //isEmpty() fails on my phone and 2.2.1
 		{
 			Toast
 			.makeText(this, "You can add a valid default email the Menu | Settings", Toast.LENGTH_LONG)
