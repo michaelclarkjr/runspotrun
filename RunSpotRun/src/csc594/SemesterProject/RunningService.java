@@ -41,7 +41,7 @@ public class RunningService extends Service {
 
    @Override
    public void onCreate() {
-	   Toast.makeText(this, "Service created...", Toast.LENGTH_LONG).show(); 
+	   //Toast.makeText(this, "Service created...", Toast.LENGTH_LONG).show(); 
        mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 
        // Display a notification about us starting.  We put an icon in the status bar.
@@ -53,12 +53,10 @@ public class RunningService extends Service {
        //Log.i("LocalService", "Received start id " + startId + ": " + intent);
        // We want this service to continue running until it is explicitly
        // stopped, so return sticky.
-	   caller = intent;
    	Toast.makeText(this, "onStartCommand", Toast.LENGTH_SHORT).show();
        return START_STICKY;
    }
 
-   private static Intent caller;
    @Override
    public void onDestroy() {
        // Cancel the persistent notification.
@@ -84,10 +82,15 @@ public class RunningService extends Service {
        Notification notification = new Notification(R.drawable.start_marker, text,
                System.currentTimeMillis());
 
+       Intent intent = new Intent(this, MainActivity.class); 
+       intent.setAction("android.intent.action.MAIN"); 
+       intent.addCategory("android.intent.category.LAUNCHER"); 
+       
        // The PendingIntent to launch our activity if the user selects this notification
        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-       		new Intent(this, MainActivity.class), 0);//BAD - relaunched app!!
-
+       		//new Intent(this, MainActivity.class), 0);//BAD - relaunched app!!
+    		   intent,0);//much better!
+       
        // Set the info for the views that show in the notification panel.
        notification.setLatestEventInfo(this, getText(R.string.local_service_label),
                       text, contentIntent);
