@@ -10,6 +10,12 @@
     <string name="MAPAPI_TOM_RELEASE">0m6pT8NVWcyhvWg_t8_-hczplZWgSxQk85X6n8w</string>
 	<string name="MAPAPI_LORA_DEBUG">0naW5_sRyRGBfE9xxfLfNHgGqMwwaScuCbp6xDQ</string>
 	
+	<string name="local_service_started">ServiceStart</string>
+	<string name="local_service_stopped">ServiceStop</string>
+	<string name="local_service_label">ServiceLabel</string>
+	<string name="local_service_connected">ServiceConnected</string>
+	<string name="local_service_disconnected">ServiceDisConnected</string>
+	
 	<string-array name="updateInterval">
         <item name="1">Every 1 second</item>
         <item name="5">Every 5 seconds</item>

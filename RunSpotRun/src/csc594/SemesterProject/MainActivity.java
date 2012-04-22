@@ -6,12 +6,20 @@ import java.util.TimerTask;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 //import android.location.Location;
+import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -102,21 +110,21 @@ public class MainActivity extends Activity implements OnClickListener
 		 
 		mlocMgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 	      
-	    Location startLoc = mlocMgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-	    if (!mlocMgr.isProviderEnabled( LocationManager.GPS_PROVIDER ))
-	    {
-	    	useHardCodedPts = true;
-	      	
-	    }
-	    else 
-	    {
-	    	useHardCodedPts = false;
-	      	getRoutePointData(startLoc);
-	    }
-	      
-		mlocListener = new MyLocationListener();
-	   		
-	    mlocMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mlocListener);
+//	    Location startLoc = mlocMgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+//	    if (!mlocMgr.isProviderEnabled( LocationManager.GPS_PROVIDER ))
+//	    {
+//	    	useHardCodedPts = true;
+//	      	
+//	    }
+//	    else 
+//	    {
+//	    	useHardCodedPts = false;
+//	      	getRoutePointData(startLoc);
+//	    }
+//	      
+//		mlocListener = new MyLocationListener();
+//	   		
+//	    mlocMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mlocListener);
 	           			
     }  /*end of onCreate() */
     
@@ -133,6 +141,12 @@ public class MainActivity extends Activity implements OnClickListener
  		super.onPause();
  	}
     
+ 	@Override
+ 	protected void onDestroy() {
+ 	    super.onDestroy();
+ 	    //doUnbindService();
+ 	}
+ 	
     //Chronotimer
     private void doPauseResetTimer(String action)
 	{
@@ -182,6 +196,16 @@ public class MainActivity extends Activity implements OnClickListener
 	 /*Start - Stop Btns (start/stop timer and start/end route) */
 	 public void doStartRoute(View view)
 	 {
+		 //easy way
+		 startService(new Intent(this, RunningService.class));
+		 
+		 //hard way...
+//		 Intent i = new Intent();
+//	       i.setClassName( "csc594.SemesterProject",
+//	        "csc594.SemesterProject.RunningService" );
+//	       bindService( i, null, Context.BIND_AUTO_CREATE);
+//	       this.startService(i); 
+	       
 	    chronTimer.setBase(SystemClock.elapsedRealtime());
 		chronTimer.start();
 		startBtn.setVisibility(View.GONE); //gone - layout no longer takes up space
@@ -468,6 +492,7 @@ public class MainActivity extends Activity implements OnClickListener
             list.add(item);
             return list;
         }
-    } 	
+    }    
+
 }
 
