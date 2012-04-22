@@ -21,7 +21,7 @@
          android:id="@+id/mapView"
          android:layout_width="fill_parent"
          android:layout_height="fill_parent"
-         android:apiKey="@string/MAPAPI_TOM_DEBUG"
+         android:apiKey="@string/MAPAPI_LORA_DEBUG"
          android:clickable="true"
          android:onClick="doMapClick" />
 
