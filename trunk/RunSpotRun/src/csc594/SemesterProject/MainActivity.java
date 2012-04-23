@@ -12,6 +12,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -39,6 +40,7 @@ import java.util.Calendar;
 import java.text.SimpleDateFormat;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -52,7 +54,7 @@ public class MainActivity extends Activity implements OnClickListener
 	//publicly available database entry - this will be set by main app onCreate
 	public static DatabaseHelper DataBase;
 	
-	//service to grap GPS points
+	//service to grab GPS points
 	private Intent RunIntent;
 	
 	public static final int MENU_SETTINGS = Menu.FIRST+1;
@@ -60,33 +62,15 @@ public class MainActivity extends Activity implements OnClickListener
 	private ListView listview;
     private ArrayList<RouteItem> mListItem;
     
-    //TrackRoute
+ 
     private Button pauseBtn;
     private Button startBtn;
     private Button stopBtn;
-    
     private Chronometer chronTimer;
     private long timeWhenStopped = 0;
-    private Calendar cal = Calendar.getInstance();
-    private SimpleDateFormat fmt1 = new SimpleDateFormat("MM/dd/yyyy");
-    private SimpleDateFormat fmt2 = new SimpleDateFormat("hh:mm:ss a");
     
-	/*private int latitude;
-    private int longitude;
-    private String curDate;
-    private String routeName;
-    private String curTime;
-    private String curDist;
-    
-    private boolean useHardCodedPts;  //test
 	private LocationManager mlocMgr;
-    private LocationListener mlocListener;
-    private ArrayList<MyGeoPoint> route;
     
-    TimerTask gpsUpdate;
-    final Handler handler = new Handler();
-    Timer mTimer = new Timer();
-*/    
     
     /** Called when the activity is first created. */
     @Override
@@ -106,19 +90,8 @@ public class MainActivity extends Activity implements OnClickListener
 		
 		UpdateTripHistory();
 		
-		/*curDate = fmt1.format(cal.getTime());
-		routeName = "testRoute";
-		curDist = "1.1"; //test dist
-		
-		//init service to be called here
-		RunIntent = new Intent(this, RunningService.class);
-		
-		route = new ArrayList<MyGeoPoint>();
-		 
-		mlocMgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);*/
-	      
-
-    }  /*end of onCreate() */
+		mlocMgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE); //helper to check GPS status
+    }  
     
     
     @Override
@@ -137,6 +110,7 @@ public class MainActivity extends Activity implements OnClickListener
  	protected void onDestroy() {
  	    super.onDestroy();
  	}
+ 	
  	
     /* RUNNING TIMER */
     private void doPauseResetTimer(String action)
@@ -183,99 +157,64 @@ public class MainActivity extends Activity implements OnClickListener
 	    String time =  hours + " " + minutes + " " + seconds;  
 	    return time;  
 	}
-
 	
-	 /*Start - Stop Btns (start/stop timer and start/end route) */
 
 	 /* START - STOP Btns (start/stop timer and start/end (GPS Track Route) Service */
+	
+	private void promptUserToTurnOnGPS()
+	{
+		new AlertDialog.Builder(this)
+		.setTitle("GPS Provider Must Be Enabled")
+		.setMessage("This app requires GPS to be enabled " +
+				"for accurate route tracking. Would you like to be" +
+				" redirected to enable it?")
+				.setCancelable(false)  
+				.setPositiveButton("Yes", new DialogInterface.OnClickListener() {  
+					public void onClick(DialogInterface dialog, int id) {  
+						Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);  
+						startActivityForResult(intent, 1);  
+					}  
+				})  
+				.setNegativeButton("No", null)
+				.show();  
+	}
 
-	 public void doStartRoute(View view)
-	 {		 
-		 //easy way
-		 //startService(new Intent(this, RunningService.class));
-		 //if(RunIntent == null){RunIntent = new Intent(this, RunningService.class);}
-		 startService(RunIntent);
-		
-		 
-		 //hard way...
-		/* Intent i = new Intent();
-	       i.setClassName( "csc594.SemesterProject",
-	        "csc594.SemesterProject.RunningService" );
-	       bindService( i, null, Context.BIND_AUTO_CREATE);
-	       this.startService(i); */
-	       
-	    chronTimer.setBase(SystemClock.elapsedRealtime());
-		chronTimer.start();
-		startBtn.setVisibility(View.GONE); //gone - layout no longer takes up space
-		stopBtn.setVisibility(View.VISIBLE); 
-			
-		/*if(!useHardCodedPts)
+	public void doStartRoute(View view)
+	{	
+		if(!mlocMgr.isProviderEnabled(LocationManager.GPS_PROVIDER))
 		{
-			curTime = curDate + " " + fmt2.format(cal.getTime());
-			route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Start));
-		}
-		else
-		{
-			route.add(new MyGeoPoint(39312718,	-84281230, MyPointType.Start));
-			route.add(new MyGeoPoint(39313623,	-84282732));  //just fill in rest
-			route.add(new MyGeoPoint(39313847,	-84283859));
-			route.add(new MyGeoPoint(39314694,	-84284137));
-			route.add(new MyGeoPoint(39315831,	-84281509));
-			route.add(new MyGeoPoint(39318919,	-84279041));
-		    route.add(new MyGeoPoint(39321500,	-84273033));
-			route.add(new MyGeoPoint(39319724,	-84271874));
-			route.add(new MyGeoPoint(39314188,	-84277571));
-		}
-		
-		//handler.postDelayed(myGPSUpdate, 60 * 1000); 
-		 gpsUpdate = new TimerTask() {
-	         public void run() {
-	                 handler.post(new Runnable() {
-	                         public void run() {
-	                             addToRoute();  //here where u want to call the method
-	                         }
-	                });
-	         }
-	     };
-	     
-	     int interval = 0;
-	     try
-	     {
-	    	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-	 		interval = Integer.parseInt(sharedPrefs.getString("intervalKey", "1"));
-	     }
-	     catch(Exception ex)  {	}
+			//send user to settings with prompt to turn GPS on
+			promptUserToTurnOnGPS();
 
-	     mTimer.schedule(gpsUpdate, 0, interval * 1000);  */
-	 }
-	 
-	 private void endRoute()
-	 {
-		 chronTimer.stop();
-		 
-		 stopService(new Intent(this, RunningService.class));
-		 
-		/* if(mlocMgr.isProviderEnabled(LocationManager.GPS_PROVIDER))
-		 {
-			 cal = Calendar.getInstance(); //update time
-			 curTime = curDate + " " + fmt2.format(cal.getTime());
-			 route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Stop));
-			 System.out.println("STOP");
-			 mlocMgr.removeUpdates(mlocListener); //unregister
-		 }
-		 else
-		 {
-			route.add(new MyGeoPoint(39312594,	-84280490, MyPointType.Stop));
-		 }
-		 
-		 for(int i = 0; i < route.size(); i++)
-		 {
-			 MyGeoPoint testPt = route.get(i);
-			 System.out.println(testPt.getTypeAsString() + " " + "lat: " 
-			 + testPt.getPoint().getLatitudeE6()  + "long: " + testPt.getPoint().getLongitudeE6()
-			 + testPt.getTimeAsString());
-		 }*/
-	 }
+		}
+		else /* Don't continue with route till user turns GPS on */
+		{
+			//easy way
+			//startService(new Intent(this, RunningService.class));
+			if(RunIntent == null){RunIntent = new Intent(this, RunningService.class);}
+			startService(RunIntent);  //intend to create this in onCreate()?
+
+
+			//hard way...
+			/* Intent i = new Intent();
+		       i.setClassName( "csc594.SemesterProject",
+		        "csc594.SemesterProject.RunningService" );
+		       bindService( i, null, Context.BIND_AUTO_CREATE);
+		       this.startService(i); */
+
+			chronTimer.setBase(SystemClock.elapsedRealtime());
+			chronTimer.start();
+			startBtn.setVisibility(View.GONE); //gone - layout no longer takes up space
+			stopBtn.setVisibility(View.VISIBLE); 
+		}
+	}
+
+	private void endRoute()
+	{
+		chronTimer.stop();
+
+		stopService(new Intent(this, RunningService.class));
+	}
 		
 	public void doEndRoute(View view)
 	{    	
@@ -288,10 +227,6 @@ public class MainActivity extends Activity implements OnClickListener
 		if(RunIntent != null)
 		{ stopService(RunIntent); }
 		
-//		Intent launchMap = new Intent(this, RunMapActivity.class);
-//		launchMap.putExtra("Route", route);
-//		startActivity(launchMap);
-
 		//Intent launchMap = new Intent(this, RunMapActivity.class);
 		//launchMap.putExtra("Route", route);
 		//startActivity(launchMap);
@@ -315,6 +250,8 @@ public class MainActivity extends Activity implements OnClickListener
 		return(super.onCreateOptionsMenu(menu));
 	}
     
+    /* TRIP(s) HISTORY */
+    
     void UpdateTripHistory()
     {
 //    	RouteItem temp = new RouteItem();
@@ -329,7 +266,6 @@ public class MainActivity extends Activity implements OnClickListener
                  mListItem));
     }
     
-    /* TRIP(s) HISTORY */
     @Override
 	public void onClick(View arg0) {
     	//do nothing
