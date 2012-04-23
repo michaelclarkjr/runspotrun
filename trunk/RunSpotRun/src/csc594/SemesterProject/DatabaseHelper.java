@@ -1,5 +1,9 @@
 package csc594.SemesterProject;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import csc594.SemesterProject.MainActivity.ItemBO;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -21,31 +25,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	public void onCreate(SQLiteDatabase db) 
 	{
 		db.execSQL("CREATE TABLE Route (_id INTEGER PRIMARY KEY ASC, Name TEXT, Date TEXT, StartTime TEXT, EndTime TEXT);");
-		db.execSQL("CREATE TABLE Point (_id INTEGER PRIMARY KEY ASC, FOREIGN KEY(RouteID) REFERENCES Route(_id), Latitude REAL, Longitude REAL, Time TEXT, Distance REAL);");
-		
-		
-		/* Test Data */
-		ContentValues cv = new ContentValues();
- 
-        cv.put("Name", "Item1");
-		cv.put("Date", "2012-04-01");
-		cv.put("StartTime", "12:11:00");
-		cv.put("EndTime", "12:21:00");
-		db.insert("Route", "Name", cv);
-		
-		cv.put("RouteID", "1");
-		cv.put("Latitude", "39312718");
-		cv.put("Longitutde", "-84281230");
-		cv.put("Time", "12:11:00");
-		cv.put("Distance", "0.7");
-		db.insert("Point", "Name", cv);
-		
-		cv.put("RouteID", "1");
-		cv.put("Latitude", "39314188");
-		cv.put("Longitutde", "-84277571");
-		cv.put("Time", "12:16:00");
-		cv.put("Distance", "0.7");
-		db.insert("Point", "Name", cv);
+		db.execSQL("CREATE TABLE Point (_id INTEGER PRIMARY KEY ASC, FOREIGN KEY(RouteID) REFERENCES Route(_id), Latitude INTEGER, Longitude INTEGER, Time TEXT, Distance REAL);");
 	}
 
 	@Override
@@ -53,5 +33,35 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	{
 		// TODO Auto-generated method stub
 	}
+	
+	static List<RouteItem> GetRoutes()
+	{
+		//returns all routes
+		return new ArrayList<RouteItem>();
+	}
 
+	static RouteItem GetRoute(int routeKey)
+	{
+		//return a single route for given route key
+		return new RouteItem();
+	}
+
+	static List<MyGeoPoint> GetPoints(int routeKey)
+	{
+		//return all points for given route key
+		//<first>start, normal, <last>stop
+		
+		return new ArrayList<MyGeoPoint>();
+	}
+
+	static void AddAPoint(MyGeoPoint point, int routeKey)
+	{
+		//adds a point for given route key
+	}
+
+	static int StartRoute(Date startTime)
+	{
+		//adds a new route, returns the key
+		return 0;
+	}
 }
