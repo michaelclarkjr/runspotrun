@@ -1,6 +1,9 @@
 package csc594.SemesterProject;
 
 import java.util.ArrayList;
+
+import com.google.android.maps.GeoPoint;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -88,37 +91,51 @@ public class RouteInfoActivity extends Activity {
 		//gather route info and email 
 		try
 		{
-		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(RouteInfoActivity.this);
-		String email = sharedPrefs.getString("emailKey", "");
-		
-		if(email.length() == 0 || !email.contains("@")) //isEmpty() fails on my phone and 2.2.1
-		{
-			Toast
-			.makeText(this, "You can add a valid default email the Menu | Settings", Toast.LENGTH_LONG)
-			.show();
-			//return;
-		}
-		String subject = "Some Route Subject";
-		StringBuilder sb = new StringBuilder();
-		sb.append("Route info here!\n");
-		sb.append("More route info here!\n");
-		
-		Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:" + email + 
-				"?subject=" + Uri.encode(subject) +  
-				"&body=" + Uri.encode(sb.toString())));
-		startActivity(intent);
+			SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(RouteInfoActivity.this);
+			String email = sharedPrefs.getString("emailKey", "");
 			
-//easy way but shows other intents that are NOT just email.
-//		Intent intent = new Intent(Intent.ACTION_SEND);
-//		intent.setType("text/plain");
-//		intent.putExtra(Intent.EXTRA_EMAIL  , new String[]{email});
-//		intent.putExtra(Intent.EXTRA_SUBJECT, "subject of email");
-//		intent.putExtra(Intent.EXTRA_TEXT   , "body of email");
-//		startActivity(Intent.createChooser(intent, "Send mail..."));
+			if(email.length() == 0 || !email.contains("@")) //isEmpty() fails on my phone and 2.2.1
+			{
+				Toast
+				.makeText(this, "You can add a valid default email the Menu | Settings", Toast.LENGTH_LONG)
+				.show();
+				//return;//dont return just keep going
+			}
+			String subject = "Jogging route from " + tvDate.getText().toString();
+			StringBuilder sb = new StringBuilder();
+			ArrayList<MyGeoPoint> route = MainActivity.DataBase.GetPoints(routeKeyDB);
+			
+			GeoPoint point;
+			String date, time, distance;
+			
+			sb.append("Route info:\n");
+			for(int i=0;i<route.size(); i++)
+			{				
+				point = route.get(i).getPoint();
+				time = route.get(i).getTime();
+				date = "date";// route.get(i).getDate();				
+				distance = route.get(i).getDistance();
+				sb.append(String.format("%s %s %s %s\n", point.toString(), time, date, distance));
+			}
+			
+			//sb.append("More route info here!\n");
+			
+			Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:" + email + 
+					"?subject=" + Uri.encode(subject) +  
+					"&body=" + Uri.encode(sb.toString())));
+			startActivity(intent);
+				
+	//easy way but shows other intents that are NOT just email.
+	//		Intent intent = new Intent(Intent.ACTION_SEND);
+	//		intent.setType("text/plain");
+	//		intent.putExtra(Intent.EXTRA_EMAIL  , new String[]{email});
+	//		intent.putExtra(Intent.EXTRA_SUBJECT, "subject of email");
+	//		intent.putExtra(Intent.EXTRA_TEXT   , "body of email");
+	//		startActivity(Intent.createChooser(intent, "Send mail..."));
 		
 		} catch (Exception ex) {					
 			new AlertDialog.Builder(this)
-	  		  .setTitle("Could not get settings")
+	  		  .setTitle("Could not send email")
 	  		  .setMessage(String.format("%s", ex.getMessage()))
 	  		  .setNeutralButton("OK", null)
 	  		  .show();
