@@ -65,7 +65,7 @@ public class MainActivity extends Activity implements OnClickListener
     private SimpleDateFormat fmt1 = new SimpleDateFormat("MM/dd/yyyy");
     private SimpleDateFormat fmt2 = new SimpleDateFormat("hh:mm:ss a");
     
-	private int latitude;
+	/*private int latitude;
     private int longitude;
     private String curDate;
     private String routeName;
@@ -80,9 +80,8 @@ public class MainActivity extends Activity implements OnClickListener
     TimerTask gpsUpdate;
     final Handler handler = new Handler();
     Timer mTimer = new Timer();
+*/    
     
-	//private static final int GET_ROUTE = 1010;
-
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -102,30 +101,15 @@ public class MainActivity extends Activity implements OnClickListener
 		pauseBtn = (Button)findViewById(R.id.pause);
 		
 		chronTimer = (Chronometer)findViewById(R.id.timer);
-		curDate = fmt1.format(cal.getTime());
+		/*curDate = fmt1.format(cal.getTime());
 		routeName = "testRoute";
 		curDist = "1.1"; //test dist
 		
 		route = new ArrayList<MyGeoPoint>();
 		 
-		mlocMgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		mlocMgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);*/
 	      
-//	    Location startLoc = mlocMgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-//	    if (!mlocMgr.isProviderEnabled( LocationManager.GPS_PROVIDER ))
-//	    {
-//	    	useHardCodedPts = true;
-//	      	
-//	    }
-//	    else 
-//	    {
-//	    	useHardCodedPts = false;
-//	      	getRoutePointData(startLoc);
-//	    }
-//	      
-//		mlocListener = new MyLocationListener();
-//	   		
-//	    mlocMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mlocListener);
-	           			
+
     }  /*end of onCreate() */
     
     
@@ -147,7 +131,7 @@ public class MainActivity extends Activity implements OnClickListener
  	    //doUnbindService();
  	}
  	
-    //Chronotimer
+    /* RUNNING TIMER */
     private void doPauseResetTimer(String action)
 	{
 		if(action.equals("reset"))
@@ -193,25 +177,25 @@ public class MainActivity extends Activity implements OnClickListener
 	    return time;  
 	}
 	
-	 /*Start - Stop Btns (start/stop timer and start/end route) */
+	 /* START - STOP Btns (start/stop timer and start/end (GPS Track Route) Service */
 	 public void doStartRoute(View view)
 	 {
 		 //easy way
 		 startService(new Intent(this, RunningService.class));
 		 
 		 //hard way...
-//		 Intent i = new Intent();
-//	       i.setClassName( "csc594.SemesterProject",
-//	        "csc594.SemesterProject.RunningService" );
-//	       bindService( i, null, Context.BIND_AUTO_CREATE);
-//	       this.startService(i); 
+		/* Intent i = new Intent();
+	       i.setClassName( "csc594.SemesterProject",
+	        "csc594.SemesterProject.RunningService" );
+	       bindService( i, null, Context.BIND_AUTO_CREATE);
+	       this.startService(i); */
 	       
 	    chronTimer.setBase(SystemClock.elapsedRealtime());
 		chronTimer.start();
 		startBtn.setVisibility(View.GONE); //gone - layout no longer takes up space
 		stopBtn.setVisibility(View.VISIBLE); 
 			
-		if(!useHardCodedPts)
+		/*if(!useHardCodedPts)
 		{
 			curTime = curDate + " " + fmt2.format(cal.getTime());
 			route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Start));
@@ -248,14 +232,16 @@ public class MainActivity extends Activity implements OnClickListener
 	     }
 	     catch(Exception ex)  {	}
 
-	     mTimer.schedule(gpsUpdate, 0, interval * 1000);  
+	     mTimer.schedule(gpsUpdate, 0, interval * 1000);  */
 	 }
 	 
 	 private void endRoute()
 	 {
 		 chronTimer.stop();
 		 
-		 if(!useHardCodedPts)
+		 stopService(new Intent(this, RunningService.class));
+		 
+		/* if(mlocMgr.isProviderEnabled(LocationManager.GPS_PROVIDER))
 		 {
 			 cal = Calendar.getInstance(); //update time
 			 curTime = curDate + " " + fmt2.format(cal.getTime());
@@ -265,7 +251,7 @@ public class MainActivity extends Activity implements OnClickListener
 		 }
 		 else
 		 {
-			 route.add(new MyGeoPoint(39312594,	-84280490, MyPointType.Stop));
+			route.add(new MyGeoPoint(39312594,	-84280490, MyPointType.Stop));
 		 }
 		 
 		 for(int i = 0; i < route.size(); i++)
@@ -274,7 +260,7 @@ public class MainActivity extends Activity implements OnClickListener
 			 System.out.println(testPt.getTypeAsString() + " " + "lat: " 
 			 + testPt.getPoint().getLatitudeE6()  + "long: " + testPt.getPoint().getLongitudeE6()
 			 + testPt.getTimeAsString());
-		 }
+		 }*/
 	 }
 		
 	public void doEndRoute(View view)
@@ -282,60 +268,13 @@ public class MainActivity extends Activity implements OnClickListener
 		endRoute();
 	}
 		
-	public void doGoToMap(View view)
+	public void doGoToMap(View view) /* on route info - was still here just for testing */
 	{    	
-		Intent launchMap = new Intent(this, RunMapActivity.class);
-		launchMap.putExtra("Route", route);
-		startActivity(launchMap);
+		//Intent launchMap = new Intent(this, RunMapActivity.class);
+		//launchMap.putExtra("Route", route);
+		//startActivity(launchMap);
 	}
 
-	
-	 /* Gets current data about a point in the route: (int) latitude, (int) longitude, (string) time, 
-	  (string) distance, (string) name (as used by the MyGeoPoint Class).
-	  */
-	private void getRoutePointData(Location loc)
-	{
-		double lat =  loc.getLatitude();
-		double lng = loc.getLongitude();
-		
-		latitude = (int) (lat * 1E6); //compatible with maps api
-		longitude = (int) (lng * 1E6);
-	
-		cal = Calendar.getInstance(); //update time
-		curTime = curDate + " " + fmt2.format(cal.getTime()); 
-	}    
-    	 
-	private void addToRoute()
-	{
-	    route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Normal));
-	}
-		
-	public class MyLocationListener implements LocationListener
-	{
-		@Override
-		public void onLocationChanged(Location loc)
-		{
-			getRoutePointData(loc); //update route point data
-		}	
-		
-		@Override	
-		public void onProviderDisabled(String provider)
-		{
-		
-		}	
-		
-		@Override
-		public void onProviderEnabled(String provider)
-		{	
-	
-		}	
-		
-		@Override
-		public void onStatusChanged(String provider, int status, Bundle extras)	
-		{	
-		
-		}
-	} /* End MyLocationListener */
   
 	/* SETTINGS */
     @Override
