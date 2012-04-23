@@ -42,7 +42,7 @@ public class RouteInfoActivity extends Activity {
 	    routeKeyDB = i.getIntExtra("ROUTEKEY", 0);
 	    	   
 	    //get database info
-	    route = DatabaseHelper.GetRoute(routeKeyDB);
+	    route =  MainActivity.DataBase.GetRoute(routeKeyDB);
 	    
 	    //update screen
 	    tvDate.setText(route.getDate());
