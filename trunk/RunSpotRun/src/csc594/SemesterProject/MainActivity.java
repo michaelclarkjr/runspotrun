@@ -221,6 +221,8 @@ public class MainActivity extends Activity implements OnClickListener
 		chronTimer.stop();
 		progressBar.setVisibility(View.INVISIBLE);
 		
+		UpdateTripHistory(); //newly finished route will be at top of the list
+		
 		stopService(new Intent(this, RunningService.class));
 	}
 		

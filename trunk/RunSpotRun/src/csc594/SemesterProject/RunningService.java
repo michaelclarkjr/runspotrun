@@ -124,7 +124,7 @@ public class RunningService extends Service
 	    item.setDate(fmt1.format(cal.getTime()));
 	    item.setTime(curTime);
 	    item.setDistance(0.0);
-		routeKeyDB =  MainActivity.DataBase.AddRoute(item); /*this returns long, need int for the key */
+		routeKeyDB =  (int) MainActivity.DataBase.AddRoute(item); /*this returns long, need int for the key */
 		MainActivity.DataBase.AddPoint(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Start), routeKeyDB);
 
 		/* Timed storing points for rest of the route */
