@@ -3,6 +3,7 @@ package csc594.SemesterProject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -23,25 +24,26 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.provider.Settings;
+//import android.provider.Settings;
 import android.widget.Toast;
 
 public class RunningService extends Service 
 {
 	private int latitude;
 	private int longitude;
-	private String curDate;
+	//private String curDate;
 	private String routeName;
 	private String curTime;
 	private String curDist;
 
 	private Calendar cal = Calendar.getInstance();
-	private SimpleDateFormat fmt1 = new SimpleDateFormat("MM/dd/yyyy");
+	//private SimpleDateFormat fmt1 = new SimpleDateFormat("MM/dd/yyyy");
 	private SimpleDateFormat fmt2 = new SimpleDateFormat("hh:mm:ss a");
 
 	private LocationManager mlocMgr;
 	private LocationListener mlocListener;
-	private ArrayList<MyGeoPoint> route;
+	//private ArrayList<MyGeoPoint> route;
+	private int routeKeyDB;
 
 	private Timer mTimer = new Timer();
 	private TimerTask gpsUpdate;
@@ -69,7 +71,6 @@ public class RunningService extends Service
 	//    * Class for clients to access.  Because we know this service always
 	//    * runs in the same process as its clients, we don't need to deal with
 	//    * IPC.
-
 	public class LocalBinder extends Binder {
 		RunningService getService() {
 			return null;
@@ -87,12 +88,13 @@ public class RunningService extends Service
 
 		latitude = 0;
 		longitude = 0;
-		curDate = fmt1.format(cal.getTime());
+		//curDate = fmt1.format(cal.getTime());
 		routeName = "testRoute";
 		curTime = fmt2.format(cal.getTime());
 		curDist = "1.1"; //test dist
 
-		route = new ArrayList<MyGeoPoint>();
+		//route = new ArrayList<MyGeoPoint>();
+	    routeKeyDB = 0;
 
 		mlocMgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
@@ -111,13 +113,14 @@ public class RunningService extends Service
 		// We want this service to continue running until it is explicitly
 		// stopped, so return sticky.
 		Toast.makeText(this, "onStartCommand", Toast.LENGTH_SHORT).show();
-
+		
 		Location startLoc = mlocMgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
 		getRoutePointData(startLoc);
-
-		curTime = curDate + " " + fmt2.format(cal.getTime());
-		route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Start));
+		
+		Date curDate = cal.getTime(); //updated in getRoutePointData()
+		//route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Start));
+		routeKeyDB =  MainActivity.DataBase.StartRoute(curDate);
+		MainActivity.DataBase.AddAPoint(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Start), routeKeyDB);
 
 		/* Timed storing points for rest of the route */
 		gpsUpdate = new TimerTask() {
@@ -150,11 +153,14 @@ public class RunningService extends Service
 		mNM.cancel(NOTIFICATION);
 
 		cal = Calendar.getInstance(); //update time
-		curTime = curDate + " " + fmt2.format(cal.getTime());
-		route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Stop));
+		curTime = fmt2.format(cal.getTime());
+		//route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Stop))
+		MainActivity.DataBase.AddAPoint(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Stop), routeKeyDB);
 		mlocMgr.removeUpdates(mlocListener); //unregister
 		
+		/** TESTING **/
 		System.out.println("STOP");
+		ArrayList<MyGeoPoint> route = MainActivity.DataBase.GetPoints(routeKeyDB);
 		for(int i = 0; i < route.size(); i++)
 		{
 			MyGeoPoint testPt = route.get(i);
@@ -195,12 +201,14 @@ public class RunningService extends Service
 		longitude = (int) (lng * 1E6);
 
 		cal = Calendar.getInstance(); //update time
-		curTime = curDate + " " + fmt2.format(cal.getTime()); 
+		//curTime = curDate + " " + fmt2.format(cal.getTime()); 
+		curTime = fmt2.format(cal.getTime());
 	}    
 
 	private void addToRoute()
 	{
-		route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Normal));
+		//route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Normal));
+		MainActivity.DataBase.AddAPoint(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Normal), routeKeyDB);
 	}
 
 	public class MyLocationListener implements LocationListener

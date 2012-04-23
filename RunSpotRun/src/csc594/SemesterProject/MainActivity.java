@@ -112,7 +112,8 @@ public class MainActivity extends Activity implements OnClickListener
  	}
  	
  	
-    /* RUNNING TIMER */
+    /* TIMER - PAUSE - RESET - Works but doesn't make sense to use; without it pausing
+     * and/or deleting & recreating route points */
     private void doPauseResetTimer(String action)
 	{
 		if(action.equals("reset"))
@@ -159,7 +160,7 @@ public class MainActivity extends Activity implements OnClickListener
 	}
 	
 
-	 /* START - STOP Btns (start/stop timer and start/end (GPS Track Route) Service */
+	 /* START - STOP Btns (start/stop timer and start/end (GPS Track Route) Service) */
 	
 	private void promptUserToTurnOnGPS()
 	{
