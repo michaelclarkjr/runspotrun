@@ -37,7 +37,7 @@ public class RunningService extends Service
 	private String curDist;
 
 	private Calendar cal = Calendar.getInstance();
-	//private SimpleDateFormat fmt1 = new SimpleDateFormat("MM/dd/yyyy");
+	private SimpleDateFormat fmt1 = new SimpleDateFormat("MM/dd/yyyy");
 	private SimpleDateFormat fmt2 = new SimpleDateFormat("hh:mm:ss a");
 
 	private LocationManager mlocMgr;
@@ -119,8 +119,13 @@ public class RunningService extends Service
 		
 		Date curDate = cal.getTime(); //updated in getRoutePointData()
 		//route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Start));
-		routeKeyDB =  MainActivity.DataBase.StartRoute(curDate);
-		MainActivity.DataBase.AddAPoint(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Start), routeKeyDB);
+		RouteItem item = new RouteItem();
+	    item.setName(routeName);
+	    item.setDate(fmt1.format(cal.getTime()));
+	    item.setTime(curTime);
+	    item.setDistance(0.0);
+		routeKeyDB =  MainActivity.DataBase.AddRoute(item); /*this returns long, need int for the key */
+		MainActivity.DataBase.AddPoint(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Start), routeKeyDB);
 
 		/* Timed storing points for rest of the route */
 		gpsUpdate = new TimerTask() {
@@ -155,7 +160,7 @@ public class RunningService extends Service
 		cal = Calendar.getInstance(); //update time
 		curTime = fmt2.format(cal.getTime());
 		//route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Stop))
-		MainActivity.DataBase.AddAPoint(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Stop), routeKeyDB);
+		MainActivity.DataBase.AddPoint(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Stop), routeKeyDB);
 		mlocMgr.removeUpdates(mlocListener); //unregister
 		
 		/** TESTING **/
@@ -208,7 +213,7 @@ public class RunningService extends Service
 	private void addToRoute()
 	{
 		//route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Normal));
-		MainActivity.DataBase.AddAPoint(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Normal), routeKeyDB);
+		MainActivity.DataBase.AddPoint(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Normal), routeKeyDB);
 	}
 
 	public class MyLocationListener implements LocationListener
