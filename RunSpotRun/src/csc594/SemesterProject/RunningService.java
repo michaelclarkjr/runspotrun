@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.widget.Toast;
 
 public class RunningService extends Service 
@@ -38,16 +39,15 @@ public class RunningService extends Service
 	private SimpleDateFormat fmt1 = new SimpleDateFormat("MM/dd/yyyy");
 	private SimpleDateFormat fmt2 = new SimpleDateFormat("hh:mm:ss a");
 
-	private boolean useHardCodedPts;  //test
 	private LocationManager mlocMgr;
 	private LocationListener mlocListener;
 	private ArrayList<MyGeoPoint> route;
 
-	private TimerTask gpsUpdate;
-	private final Handler handler = new Handler();
 	private Timer mTimer = new Timer();
-
-	String tag="TestService";
+	private TimerTask gpsUpdate;
+	private final Handler handler1 = new Handler();
+	
+	//private String tag="TestService";
 
 	private NotificationManager mNM;
 
@@ -57,7 +57,7 @@ public class RunningService extends Service
 
 	// This is the object that receives interactions from clients.  See
 	// RemoteService for a more complete example.
-	private final IBinder mBinder = new LocalBinder();
+	//private final IBinder mBinder = new LocalBinder();
    
 	@Override
 	public void onStart(Intent intent, int startId) 
@@ -85,29 +85,25 @@ public class RunningService extends Service
 		// Display a notification about us starting.  We put an icon in the status bar.
 		showNotification();
 
+		latitude = 0;
+		longitude = 0;
 		curDate = fmt1.format(cal.getTime());
 		routeName = "testRoute";
+		curTime = fmt2.format(cal.getTime());
 		curDist = "1.1"; //test dist
 
 		route = new ArrayList<MyGeoPoint>();
 
 		mlocMgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-		if(!mlocMgr.isProviderEnabled(LocationManager.GPS_PROVIDER))
-		{
-			//send user to settings with prompt to turn GPS on
-			
-		
-		}
-		
 		mlocListener = new MyLocationListener();
  		
         mlocMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mlocListener);
         			//provider, minTime in ms, minDistance in meters, Location Listener
         					//minTime minDistance - hints not rules *might be better to use something else for set intervals*
-
 	}
-
+	
+	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) 
 	{
@@ -115,37 +111,20 @@ public class RunningService extends Service
 		// We want this service to continue running until it is explicitly
 		// stopped, so return sticky.
 		Toast.makeText(this, "onStartCommand", Toast.LENGTH_SHORT).show();
-		
-		if(mlocMgr.isProviderEnabled(LocationManager.GPS_PROVIDER))
-		{
-			Location startLoc = mlocMgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-     		
-			getRoutePointData(startLoc);
-			
-			curTime = curDate + " " + fmt2.format(cal.getTime());
-			route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Start));
-		}
-		else
-		{
-			//send user to settings with prompt to turn GPS on... 
-			
-			route.add(new MyGeoPoint(39312718,	-84281230, MyPointType.Start));
-			route.add(new MyGeoPoint(39313623,	-84282732));  //just fill in rest
-			route.add(new MyGeoPoint(39313847,	-84283859));
-			route.add(new MyGeoPoint(39314694,	-84284137));
-			route.add(new MyGeoPoint(39315831,	-84281509));
-			route.add(new MyGeoPoint(39318919,	-84279041));
-		    route.add(new MyGeoPoint(39321500,	-84273033));
-			route.add(new MyGeoPoint(39319724,	-84271874));
-			route.add(new MyGeoPoint(39314188,	-84277571));
-		}
+
+		Location startLoc = mlocMgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+		getRoutePointData(startLoc);
+
+		curTime = curDate + " " + fmt2.format(cal.getTime());
+		route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Start));
 
 		/* Timed storing points for rest of the route */
 		gpsUpdate = new TimerTask() {
 			public void run() {
-				handler.post(new Runnable() {
+				handler1.post(new Runnable() {
 					public void run() {
-						addToRoute();  //here where u want to call the method
+						addToRoute(); 
 					}
 				});
 			}
@@ -159,7 +138,7 @@ public class RunningService extends Service
 		}
 		catch(Exception ex)  {	}
 
-		mTimer.schedule(gpsUpdate, 0, interval * 1000);  
+		mTimer.schedule(gpsUpdate, interval * 1000, interval * 1000);  
 
 		return START_STICKY;
 	}
@@ -170,26 +149,18 @@ public class RunningService extends Service
 		// Cancel the persistent notification.
 		mNM.cancel(NOTIFICATION);
 
-		if(mlocMgr.isProviderEnabled(LocationManager.GPS_PROVIDER))
-		{
-			cal = Calendar.getInstance(); //update time
-			curTime = curDate + " " + fmt2.format(cal.getTime());
-			route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Stop));
-			System.out.println("STOP");
-			mlocMgr.removeUpdates(mlocListener); //unregister
-		}
-		else
-		{
-			//turn gps on from settings?..
-			route.add(new MyGeoPoint(39312594,	-84280490, MyPointType.Stop));
-		}
-
+		cal = Calendar.getInstance(); //update time
+		curTime = curDate + " " + fmt2.format(cal.getTime());
+		route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Stop));
+		mlocMgr.removeUpdates(mlocListener); //unregister
+		
+		System.out.println("STOP");
 		for(int i = 0; i < route.size(); i++)
 		{
 			MyGeoPoint testPt = route.get(i);
 			System.out.println(testPt.getTypeAsString() + " " + "lat: " 
-					+ testPt.getPoint().getLatitudeE6()  + "long: " + testPt.getPoint().getLongitudeE6()
-					+ testPt.getTimeAsString());
+					+ testPt.getPoint().getLatitudeE6()  + " long: " + testPt.getPoint().getLongitudeE6()
+					+ " " + testPt.getTimeAsString());
 		}
 
 		// Tell the user we stopped.
@@ -204,15 +175,21 @@ public class RunningService extends Service
 	}
 
    
-   /* TRACK ROUTE */
+   /* Helper methods with gathering route point data */
    
    /* Gets current data about a point in the route: (int) latitude, (int) longitude, (string) time, 
 	  (string) distance, (string) name (as used by the MyGeoPoint Class).
 	  */
 	private void getRoutePointData(Location loc)
 	{
-		double lat =  loc.getLatitude();
-		double lng = loc.getLongitude();
+		double lat = 0;
+		double lng = 0;
+		
+		if(loc != null)
+		{
+			lat = loc.getLatitude();
+			lng = loc.getLongitude();
+		}
 
 		latitude = (int) (lat * 1E6); //compatible with maps api
 		longitude = (int) (lng * 1E6);
@@ -235,22 +212,13 @@ public class RunningService extends Service
 		}	
 
 		@Override	
-		public void onProviderDisabled(String provider)
-		{
-			//send user to settings with prompt to turn GPS on
-		}	
+		public void onProviderDisabled(String provider) {}	
 
 		@Override
-		public void onProviderEnabled(String provider)
-		{	
-			//restart?
-		}	
+		public void onProviderEnabled(String provider) {}	
 
 		@Override
-		public void onStatusChanged(String provider, int status, Bundle extras)	
-		{	
-
-		}
+		public void onStatusChanged(String provider, int status, Bundle extras)	{}
 	} /* End MyLocationListener */
 
    
@@ -281,5 +249,15 @@ public class RunningService extends Service
 		mNM.notify(NOTIFICATION, notification);
 	}
 
-   
+	/*private void promptUserToTurnOnGPS()
+	{
+		Toast.makeText(this, R.string.gps_off_prompt, Toast.LENGTH_LONG).show();
+
+		final Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+		//intent.addCategory(Intent.CATEGORY_LAUNCHER);
+		//intent.setComponent(toLaunch);
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		//startActivityForResult(intent, 1);
+		startActivity(intent);
+	}*/ //worked but wasn't ideal checking from within this service
 }
