@@ -49,10 +49,16 @@ import android.widget.TableLayout;
 
 public class MainActivity extends Activity implements OnClickListener
 {
+	//publicly available database entry - this will be set by main app onCreate
+	public static DatabaseHelper DataBase;
+	
+	//service to grap GPS points
+	private Intent RunIntent;
+	
 	public static final int MENU_SETTINGS = Menu.FIRST+1;
 	public static final int MENU_ABOUT = Menu.FIRST+2;
 	private ListView listview;
-    private ArrayList mListItem;
+    private ArrayList<RouteItem> mListItem;
     
     //TrackRoute
     private Button pauseBtn;
@@ -90,20 +96,22 @@ public class MainActivity extends Activity implements OnClickListener
         setContentView(R.layout.main);     
         
         listview = (ListView) findViewById(R.id.list_view);
-        ItemBO temp = new ItemBO();
-        mListItem = temp.getItems();
-        listview.setAdapter(new ListAdapter(this, R.id.list_view,
-                mListItem));
-        
         startBtn = (Button)findViewById(R.id.start);
         stopBtn = (Button)findViewById(R.id.stop);
         stopBtn.setVisibility(View.GONE); 
-		pauseBtn = (Button)findViewById(R.id.pause);
-		
+		pauseBtn = (Button)findViewById(R.id.pause);		
 		chronTimer = (Chronometer)findViewById(R.id.timer);
+		
+		DataBase = new DatabaseHelper(this);
+		
+		UpdateTripHistory();
+		
 		/*curDate = fmt1.format(cal.getTime());
 		routeName = "testRoute";
 		curDist = "1.1"; //test dist
+		
+		//init service to be called here
+		RunIntent = new Intent(this, RunningService.class);
 		
 		route = new ArrayList<MyGeoPoint>();
 		 
@@ -128,7 +136,6 @@ public class MainActivity extends Activity implements OnClickListener
  	@Override
  	protected void onDestroy() {
  	    super.onDestroy();
- 	    //doUnbindService();
  	}
  	
     /* RUNNING TIMER */
@@ -176,12 +183,19 @@ public class MainActivity extends Activity implements OnClickListener
 	    String time =  hours + " " + minutes + " " + seconds;  
 	    return time;  
 	}
+
 	
+	 /*Start - Stop Btns (start/stop timer and start/end route) */
+
 	 /* START - STOP Btns (start/stop timer and start/end (GPS Track Route) Service */
+
 	 public void doStartRoute(View view)
-	 {
+	 {		 
 		 //easy way
-		 startService(new Intent(this, RunningService.class));
+		 //startService(new Intent(this, RunningService.class));
+		 //if(RunIntent == null){RunIntent = new Intent(this, RunningService.class);}
+		 startService(RunIntent);
+		
 		 
 		 //hard way...
 		/* Intent i = new Intent();
@@ -270,9 +284,18 @@ public class MainActivity extends Activity implements OnClickListener
 		
 	public void doGoToMap(View view) /* on route info - was still here just for testing */
 	{    	
+
+		if(RunIntent != null)
+		{ stopService(RunIntent); }
+		
+//		Intent launchMap = new Intent(this, RunMapActivity.class);
+//		launchMap.putExtra("Route", route);
+//		startActivity(launchMap);
+
 		//Intent launchMap = new Intent(this, RunMapActivity.class);
 		//launchMap.putExtra("Route", route);
 		//startActivity(launchMap);
+
 	}
 
   
@@ -291,6 +314,20 @@ public class MainActivity extends Activity implements OnClickListener
 		
 		return(super.onCreateOptionsMenu(menu));
 	}
+    
+    void UpdateTripHistory()
+    {
+//    	RouteItem temp = new RouteItem();
+//    	mListItem = temp.getItems();
+   	 
+   	 
+    	//poll database
+    	mListItem = DataBase.GetRoutes();
+    	
+    	//attached adapter
+         listview.setAdapter(new ListAdapter(this, R.id.list_view,
+                 mListItem));
+    }
     
     /* TRIP(s) HISTORY */
     @Override
@@ -317,7 +354,7 @@ public class MainActivity extends Activity implements OnClickListener
                     LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                     view = vi.inflate(R.layout.listviewrow, null); //--CloneChangeRequired(list_item)
                 }
-                final ItemBO listItem = (ItemBO)mList.get(position); //--CloneChangeRequired
+                final RouteItem listItem = (RouteItem)mList.get(position); //--CloneChangeRequired
                 if (listItem != null) {
                     // setting list_item views
                     ((TextView)view.findViewById(R.id.tvDate))
@@ -332,7 +369,7 @@ public class MainActivity extends Activity implements OnClickListener
 //	                  		  .makeText(MainActivity.this, "onClick list adapter",Toast.LENGTH_LONG)
 //	                  		  .show();
 							Intent myIntent = new Intent(MainActivity.this, RouteInfoActivity.class);
-                            myIntent.putExtra("NAME", listItem.getName());
+                            myIntent.putExtra("ROUTEKEY", listItem.getKey());
                             startActivity(myIntent);
 //                            finish();
                         }
@@ -343,95 +380,6 @@ public class MainActivity extends Activity implements OnClickListener
             }
             return view;
         }
-    }	
-    public class ItemBO {
-        private String name;
-        private String date;
-        private String time;
-        private double distance;
-        
-        public String getName() { return name;  }
-        public void setName(String name) { this.name = name; }
-        
-        public String getDate() { return date; }
-        public void setDate(String _date) { this.date = _date; }
-        
-        public String getTime() { return time; }
-        public void setTime(String _time) { this.time = _time; }
-        
-        public Double getDistance() { return distance; }
-        public void setDistance(double _distance) { this.distance = _distance; }
-        
-        
-        // / TEMP DEBUG--------------------
-        public ArrayList getItems() {
-            ArrayList list = new ArrayList();
-            ItemBO item;
-     
-            item = new ItemBO();
-            item.setName("item 1");
-            item.setDate("4/1/12");
-            item.setTime("12:11 pm");
-            item.setDistance(1.4);
-            list.add(item);
-     
-            item = new ItemBO();
-            item.setName("item 1");
-            item.setDate("4/4/12");
-            item.setTime("2:11 pm");
-            item.setDistance(2.5);
-            list.add(item);
-     
-            item = new ItemBO();
-            item.setName("item 1");
-            item.setDate("4/6/12");
-            item.setTime("3:11 pm");
-            item.setDistance(4.0);
-            list.add(item);
-     
-            item = new ItemBO();
-            item.setName("item 1");
-            item.setDate("4/1/12");
-            item.setTime("12:11 pm");
-            item.setDistance(1.4);
-            list.add(item);
-     
-            item = new ItemBO();
-            item.setName("item 1");
-            item.setDate("4/4/12");
-            item.setTime("2:11 pm");
-            item.setDistance(2.5);
-            list.add(item);
-     
-            item = new ItemBO();
-            item.setName("item 1");
-            item.setDate("4/6/12");
-            item.setTime("3:11 pm");
-            item.setDistance(4.0);
-            list.add(item);
-            item = new ItemBO();
-            item.setName("item 1");
-            item.setDate("4/1/12");
-            item.setTime("12:11 pm");
-            item.setDistance(1.4);
-            list.add(item);
-     
-            item = new ItemBO();
-            item.setName("item 1");
-            item.setDate("4/4/12");
-            item.setTime("2:11 pm");
-            item.setDistance(2.5);
-            list.add(item);
-     
-            item = new ItemBO();
-            item.setName("item 1");
-            item.setDate("4/6/12");
-            item.setTime("3:11 pm");
-            item.setDistance(4.0);
-            list.add(item);
-            return list;
-        }
-    }    
-
+    }	   
 }
 
