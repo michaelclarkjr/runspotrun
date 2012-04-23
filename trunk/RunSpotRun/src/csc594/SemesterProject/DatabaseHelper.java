@@ -68,7 +68,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	{
 		//return a single route for given route key	
 		
-		String SQL = "SELECT * FROM Route WHERE _id = ?";
+		String SQL = "SELECT * FROM Route WHERE _id = ? ORDER BY Date, StartTime DESC";
         Cursor cur = this.getReadableDatabase().rawQuery(SQL, new String[] { Integer.toString(routeKey) });
         
         if (cur.moveToFirst())
