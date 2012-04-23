@@ -29,6 +29,7 @@ import android.view.ViewGroup;
 
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,7 +56,7 @@ public class MainActivity extends Activity implements OnClickListener
 	public static DatabaseHelper DataBase;
 	
 	//service to grab GPS points
-	private Intent RunIntent;
+	//private Intent RunIntent;
 	
 	public static final int MENU_SETTINGS = Menu.FIRST+1;
 	public static final int MENU_ABOUT = Menu.FIRST+2;
@@ -63,11 +64,12 @@ public class MainActivity extends Activity implements OnClickListener
     private ArrayList<RouteItem> mListItem;
     
  
-    private Button pauseBtn;
+    //private Button pauseBtn;
     private Button startBtn;
     private Button stopBtn;
     private Chronometer chronTimer;
-    private long timeWhenStopped = 0;
+    //private long timeWhenStopped = 0;
+    private ProgressBar progressBar;
     
 	private LocationManager mlocMgr;
     
@@ -83,9 +85,11 @@ public class MainActivity extends Activity implements OnClickListener
         startBtn = (Button)findViewById(R.id.start);
         stopBtn = (Button)findViewById(R.id.stop);
         stopBtn.setVisibility(View.GONE); 
-		pauseBtn = (Button)findViewById(R.id.pause);		
+		//pauseBtn = (Button)findViewById(R.id.pause);		
 		chronTimer = (Chronometer)findViewById(R.id.timer);
-		
+		progressBar = (ProgressBar) findViewById(R.id.progressBar1);
+		progressBar.setVisibility(View.INVISIBLE); //simple way to not have a spinning wheel 
+													//before route is in progress
 		DataBase = new DatabaseHelper(this);
 		
 		UpdateTripHistory();
@@ -107,14 +111,15 @@ public class MainActivity extends Activity implements OnClickListener
  	}
     
  	@Override
- 	protected void onDestroy() {
+ 	protected void onDestroy() //stop service?
+ 	{
  	    super.onDestroy();
  	}
  	
  	
     /* TIMER - PAUSE - RESET - Works but doesn't make sense to use; without it pausing
      * and/or deleting & recreating route points */
-    private void doPauseResetTimer(String action)
+   /* private void doPauseResetTimer(String action)
 	{
 		if(action.equals("reset"))
 		{
@@ -145,7 +150,7 @@ public class MainActivity extends Activity implements OnClickListener
 	public void doPauseTimer(View view)
 	{    	
 		doPauseResetTimer("pause");
-	}
+	}*/
         
 	private String getElapsedTimeString() 
 	{       
@@ -191,9 +196,9 @@ public class MainActivity extends Activity implements OnClickListener
 		else /* Don't continue with route till user turns GPS on */
 		{
 			//easy way
-			//startService(new Intent(this, RunningService.class));
-			if(RunIntent == null){RunIntent = new Intent(this, RunningService.class);}
-			startService(RunIntent);  //intend to create this in onCreate()?
+			startService(new Intent(this, RunningService.class));
+			//if(RunIntent == null){RunIntent = new Intent(this, RunningService.class);}
+			//startService(RunIntent);  //intend to create this in onCreate()?
 
 
 			//hard way...
@@ -205,6 +210,7 @@ public class MainActivity extends Activity implements OnClickListener
 
 			chronTimer.setBase(SystemClock.elapsedRealtime());
 			chronTimer.start();
+			progressBar.setVisibility(View.VISIBLE);
 			startBtn.setVisibility(View.GONE); //gone - layout no longer takes up space
 			stopBtn.setVisibility(View.VISIBLE); 
 		}
@@ -213,7 +219,8 @@ public class MainActivity extends Activity implements OnClickListener
 	private void endRoute()
 	{
 		chronTimer.stop();
-
+		progressBar.setVisibility(View.INVISIBLE);
+		
 		stopService(new Intent(this, RunningService.class));
 	}
 		
@@ -222,18 +229,6 @@ public class MainActivity extends Activity implements OnClickListener
 		endRoute();
 	}
 		
-	public void doGoToMap(View view) /* on route info - was still here just for testing */
-	{    	
-
-		if(RunIntent != null)
-		{ stopService(RunIntent); }
-		
-		//Intent launchMap = new Intent(this, RunMapActivity.class);
-		//launchMap.putExtra("Route", route);
-		//startActivity(launchMap);
-
-	}
-
   
 	/* SETTINGS */
     @Override
