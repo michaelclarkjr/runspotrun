@@ -33,7 +33,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		// TODO Auto-generated method stub
 	}
 	
-	static List<RouteItem> GetRoutes()
+	static ArrayList<RouteItem> GetRoutes()
 	{
 		//returns all routes
 		return new ArrayList<RouteItem>();
@@ -45,7 +45,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		return new RouteItem();
 	}
 
-	static List<MyGeoPoint> GetPoints(int routeKey)
+	static ArrayList<MyGeoPoint> GetPoints(int routeKey)
 	{
 		//return all points for given route key
 		//<first>start, normal, <last>stop
