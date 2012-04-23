@@ -249,11 +249,7 @@ public class MainActivity extends Activity implements OnClickListener
     /* TRIP(s) HISTORY */
     
     void UpdateTripHistory()
-    {
-//    	RouteItem temp = new RouteItem();
-//    	mListItem = temp.getItems();
-   	 
-   	 
+    {  
     	//poll database
     	mListItem = DataBase.GetRoutes();
     	
