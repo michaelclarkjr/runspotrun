@@ -28,8 +28,15 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	@Override
 	public void onCreate(SQLiteDatabase db) 
 	{
-		db.execSQL("CREATE TABLE Route (_id INTEGER PRIMARY KEY AUTOINCREMENT ASC, Name TEXT, Date TEXT, StartTime TEXT, EndTime TEXT, Distance TEXT);");
-		db.execSQL("CREATE TABLE Point (_id INTEGER PRIMARY KEY AUTOINCREMENT ASC, RouteID INTEGER, Latitude INTEGER, Longitude INTEGER, Time TEXT, Distance TEXT);");
+		try
+		{
+			db.execSQL("CREATE TABLE Route (_id INTEGER PRIMARY KEY AUTOINCREMENT ASC, Name TEXT, Date TEXT, StartTime TEXT, EndTime TEXT, Distance TEXT);");
+			db.execSQL("CREATE TABLE Point (_id INTEGER PRIMARY KEY AUTOINCREMENT ASC, RouteID INTEGER, Latitude INTEGER, Longitude INTEGER, Time TEXT, Distance TEXT);");
+		}
+		catch (Exception ex)
+		{
+			System.out.println(ex.toString());
+		}
 	}
 
 	@Override
