@@ -14,8 +14,8 @@
 	<string name="local_service_connected">ServiceConnected</string>
 	<string name="local_service_disconnected">ServiceDisConnected</string>
 	<string name="gps_off_prompt">Please enable GPS for accurate tracking</string>
-	<string name="finished_route_in_list">Route has been added to top of \'Past Trips\' - Click on it to 
-	    view statistics, map it, or delete route from history. </string>
+	<string name="finished_route_in_list">New route has been added to top of \'Past Trips\' - Click on it to 
+	    view statistics, map it, or delete the route from history. </string>
 	
 	
 	<string-array name="updateInterval">
