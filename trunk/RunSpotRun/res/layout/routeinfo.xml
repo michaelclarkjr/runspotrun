@@ -19,10 +19,23 @@
 	    </TableRow>
     
 	    <TableRow
+	        android:id="@+id/tableRowTime"        
+	        style="@style/routeInfoRow" >
+	        <TextView
+	            android:id="@+id/textView2"
+	            style="@style/fontRouteLabel"            
+	            android:text="Time" />
+	        <TextView
+	            android:id="@+id/tvRouteTime"
+	            style="@style/fontRouteInfo"
+	            android:text="01:32:30 pm" />
+	    </TableRow>
+	    
+	    <TableRow
 	        android:id="@+id/tableRowDuration"
 	        style="@style/routeInfoRow" >
 	        <TextView
-	            android:id="@+id/textView1"
+	            android:id="@+id/textView3"
 	            style="@style/fontRouteLabel"            
 	            android:text="Duration" />
 	        <TextView
@@ -36,7 +49,7 @@
 	        android:id="@+id/tableRowDistance"
 	        style="@style/routeInfoRow" >
 	        <TextView
-	            android:id="@+id/textView3"
+	            android:id="@+id/textView4"
 	            style="@style/fontRouteLabel"
 	            android:text="Distance" />
 	        <TextView

@@ -25,7 +25,7 @@ public class RouteInfoActivity extends Activity {
 	private int routeKeyDB;
 	private RouteItem route;
 	
-	private TextView tvDate, tvTime, tvDistance, tvSpeed;	
+	private TextView tvDate, tvTime, tvDuration, tvDistance, tvSpeed;	
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -34,7 +34,8 @@ public class RouteInfoActivity extends Activity {
         setContentView(R.layout.routeinfo); 
         
         tvDate = (TextView) findViewById(R.id.tvRouteDate);
-        tvTime = (TextView) findViewById(R.id.tvRouteDuration);
+        tvTime = (TextView) findViewById(R.id.tvRouteTime);
+        tvDuration = (TextView) findViewById(R.id.tvRouteDuration);
         tvDistance = (TextView) findViewById(R.id.tvRouteDistance);
         tvSpeed = (TextView) findViewById(R.id.tvRouteAvgSpeed);
         
@@ -52,6 +53,9 @@ public class RouteInfoActivity extends Activity {
 	    
 	    //calculate Average speed
 	    tvSpeed.setText("");
+	    
+	    //calculate Duration (can be grabbed from the timer..)
+	    tvDuration.setText("");
 	}
 	
 	@Override
