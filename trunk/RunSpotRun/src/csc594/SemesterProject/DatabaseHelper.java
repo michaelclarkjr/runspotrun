@@ -151,7 +151,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		cv.put("StartTime", route.getTime());
 		cv.putNull("EndTime");
 		cv.put("Distance", 0);
-		return this.getWritableDatabase().insert("Point", "Name", cv);
+		return this.getWritableDatabase().insert("Route", "Name", cv);
 	}
 	
 	int DeleteRoute(int routeKey)
