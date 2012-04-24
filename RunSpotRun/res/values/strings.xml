@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="hello">Hello World, RunSpotRunActivity!</string>
     <string name="app_name">RunSpotRun</string>
     <string name="mapName">Map</string>
     <string name="routeName">My Route</string>
