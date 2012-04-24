@@ -19,6 +19,8 @@ import android.graphics.RectF;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.widget.ToggleButton;
 
@@ -36,6 +38,7 @@ public class RunMapActivity extends MapActivity
 	
 	public static final int MENU_SETTINGS = Menu.FIRST+1;
 	public static final int MENU_ABOUT = Menu.FIRST+2;
+	public static final int MENU_SATELLITE = Menu.FIRST+3;
 	
 	MapView mapView;
 	private List<Overlay> mapOverlays;
@@ -54,8 +57,7 @@ public class RunMapActivity extends MapActivity
         {
         	//setup map
 			mapView = (MapView)findViewById(R.id.mapView);
-			mapView.setBuiltInZoomControls(true); //seems to do same thing as above
-			//mapView.setSatellite(true);
+			mapView.setBuiltInZoomControls(true); 
 			
 			//get route from calling intent
 			ArrayList<MyGeoPoint> route =  getIntent().getParcelableArrayListExtra("Route");					
@@ -65,7 +67,6 @@ public class RunMapActivity extends MapActivity
 			mapOverlays.add(new MyOverlay(route));  
 			    
 			MapController mapController = mapView.getController();
-//			mapController.zoomToSpan(route.get(0).getLatitudeE6(), route.get(4).getLongitudeE6());
 			mapController.setCenter(route.get(0).getPoint());
 			mapController.setZoom(15);
         	
@@ -94,22 +95,13 @@ public class RunMapActivity extends MapActivity
         super.onResume();
         //set toggle if satellite is on
         ((ToggleButton)findViewById(R.id.toggleSatellite)).setChecked(mapView.isSatellite());
-//    	try
-//    	{
-    		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(RunMapActivity.this);
-    		
-    		RunMapActivity.LineColor = Color.parseColor(sharedPrefs.getString("linecolorKey", "#FFFF0000"));
-    		RunMapActivity.LineWidth =Integer.parseInt(sharedPrefs.getString("linewidthKey", "2"));
-//    	} catch (Exception ex) {					
-//			new AlertDialog.Builder(RunMapActivity.this)
-//	  		  .setTitle("Could not add item to Database")
-//	  		  .setMessage(String.format("%s", ex.getMessage()))
-//	  		  .setNeutralButton("OK", null)
-//	  		  .show();
-//			return;
-//		}
-    }
 
+		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(RunMapActivity.this);
+		
+		RunMapActivity.LineColor = Color.parseColor(sharedPrefs.getString("linecolorKey", "#FFFF0000"));
+		RunMapActivity.LineWidth =Integer.parseInt(sharedPrefs.getString("linewidthKey", "2"));
+
+    }
     
     @Override
     public void onPause()
@@ -128,6 +120,17 @@ public class RunMapActivity extends MapActivity
 		.add(Menu.NONE, MENU_ABOUT, 1, "About")
 		.setIntent(new Intent(this, AboutActivity.class))		
 		.setIcon(R.drawable.about);
+		
+//		menu
+//		.add(Menu.NONE, MENU_SATELLITE, 2, "Satellite")
+//		.setOnMenuItemClickListener(new OnMenuItemClickListener(){
+//			   @Override
+//	           public boolean onMenuItemClick(MenuItem item){
+//				   mapView.setSatellite(!mapView.isSatellite());
+//	               return true;
+//	           }
+//	       })	
+//		.setIcon(R.drawable.about);
 		
 		return(super.onCreateOptionsMenu(menu));
 	}
