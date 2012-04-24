@@ -55,11 +55,12 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	        	
 	        	cur.moveToNext();
 	        }
-	        
+	        cur.close();
 			return routes;
         }
         else
         {	
+        	cur.close();
         	return new ArrayList<RouteItem>();
         }	
 	}
