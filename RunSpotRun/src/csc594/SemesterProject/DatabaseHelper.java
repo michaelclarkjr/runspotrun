@@ -30,8 +30,22 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	{
 		try
 		{
-			db.execSQL("CREATE TABLE Route (_id INTEGER PRIMARY KEY AUTOINCREMENT ASC, Name TEXT, Date TEXT, StartTime TEXT, EndTime TEXT, Distance TEXT);");
-			db.execSQL("CREATE TABLE Point (_id INTEGER PRIMARY KEY AUTOINCREMENT ASC, RouteID INTEGER, Latitude INTEGER, Longitude INTEGER, Time TEXT, Distance TEXT);");
+			db.execSQL("CREATE TABLE Route (_id INTEGER PRIMARY KEY ASC, Name TEXT, Date TEXT, StartTime TEXT, EndTime TEXT, Distance TEXT);");
+			db.execSQL("CREATE TABLE Point (_id INTEGER PRIMARY KEY ASC, RouteID INTEGER, Latitude INTEGER, Longitude INTEGER, Time TEXT, Distance TEXT);");
+		}
+		catch (Exception ex)
+		{
+			System.out.println(ex.toString());
+		}
+	}
+	
+	public static void ForceCreate(SQLiteDatabase db)
+	{
+		try
+		{
+			db.execSQL("CREATE TABLE Route (_id INTEGER PRIMARY KEY ASC, Name TEXT, Date TEXT, StartTime TEXT, EndTime TEXT, Distance TEXT);");
+            db.execSQL("CREATE TABLE Point (_id INTEGER PRIMARY KEY ASC, RouteID INTEGER, Latitude INTEGER, Longitude INTEGER, Time TEXT, Distance TEXT);");
+            System.out.print("onCreate Force DB");
 		}
 		catch (Exception ex)
 		{
