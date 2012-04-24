@@ -154,7 +154,7 @@ public class RouteInfoActivity extends Activity {
 				public void onClick(DialogInterface dialog, int whichButton) 
 				{
 					//remove route from DB and return
-					//DatabaseHelper.DeleteRoute(routeKeyDB)
+					MainActivity.DataBase.DeleteRoute(routeKeyDB);
 					
 					//return
 					finish();
