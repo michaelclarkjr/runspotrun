@@ -28,8 +28,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	@Override
 	public void onCreate(SQLiteDatabase db) 
 	{
-		db.execSQL("CREATE TABLE Route (_id INTEGER PRIMARY KEY ASC, Name TEXT, Date TEXT, StartTime TEXT, EndTime TEXT, Distance TEXT);");
-		db.execSQL("CREATE TABLE Point (_id INTEGER PRIMARY KEY ASC, RouteID INTEGER, Latitude INTEGER, Longitude INTEGER, Time TEXT, Distance TEXT);");
+		db.execSQL("CREATE TABLE Route (_id INTEGER PRIMARY KEY AUTOINCREMENT ASC, Name TEXT, Date TEXT, StartTime TEXT, EndTime TEXT, Distance TEXT);");
+		db.execSQL("CREATE TABLE Point (_id INTEGER PRIMARY KEY AUTOINCREMENT ASC, RouteID INTEGER, Latitude INTEGER, Longitude INTEGER, Time TEXT, Distance TEXT);");
 	}
 
 	@Override
@@ -55,11 +55,13 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	        	
 	        	cur.moveToNext();
 	        }
+	        
 	        cur.close();
 			return routes;
         }
         else
         {	
+        	
         	cur.close();
         	return new ArrayList<RouteItem>();
         }	
@@ -74,10 +76,12 @@ public class DatabaseHelper extends SQLiteOpenHelper
         
         if (cur.moveToFirst())
         {
+        	cur.close();
         	return SetRouteFromCursor(cur);
         }
         else
         {
+        	cur.close();
         	return new RouteItem();
         }
     }
@@ -117,10 +121,12 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	        	count++;
 	        }
 	        
+	        cur.close();
 			return points;
         }
         else
         {	
+        	cur.close();
         	return new ArrayList<MyGeoPoint>();
         }
 	}
@@ -136,9 +142,10 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		cv.put("Longitude", point.getPoint().getLongitudeE6());
 		cv.put("Time", point.getTime());
 		cv.put("Distance", point.getDistance());
-		return this.getWritableDatabase().insert("Point", "RouteID", cv);
 		
-		// TODO Make an UpdateRoute method, and add this distance to it's current distance
+		UpdateRoute(point.getDistance(), point.getTime(), routeKey);
+		
+		return this.getWritableDatabase().insert("Point", "RouteID", cv);
 	}
 
 	long AddRoute(RouteItem route)
@@ -160,6 +167,15 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		//deletes a single route for given route key
 		
 		return this.getWritableDatabase().delete("Route", "_id = ?", new String[] { Integer.toString(routeKey) });
+	}
+	
+	private void UpdateRoute(String distance, String endTime, int routeKey)
+	{
+		ContentValues cv = new ContentValues();
+	    cv.put("Distance", distance);
+	    cv.put("EndTime", endTime);
+	    
+	    this.getWritableDatabase().update("Route", cv, "_id = ?", new String[] { Integer.toString(routeKey) });
 	}
 	
 	private RouteItem SetRouteFromCursor(Cursor cur)
