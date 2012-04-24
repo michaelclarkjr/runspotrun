@@ -222,7 +222,7 @@ public class MainActivity extends Activity implements OnClickListener
 		progressBar.setVisibility(View.INVISIBLE);
 		stopBtn.setVisibility(View.GONE); //gone - no longer takes up space
 		startBtn.setVisibility(View.VISIBLE);
-		chronTimer.setBase(SystemClock.elapsedRealtime());
+		chronTimer.setBase(SystemClock.elapsedRealtime()); //reset to 0
 		
 		/*Toast.makeText(this, "Route has been added to top of 'Past Trips' - Click on it to" +
 				" view statistics, map it, or delete route from history. ", Toast.LENGTH_LONG).show();*/
