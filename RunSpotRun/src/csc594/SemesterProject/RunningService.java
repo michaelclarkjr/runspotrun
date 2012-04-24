@@ -112,7 +112,7 @@ public class RunningService extends Service
 		//Log.i("LocalService", "Received start id " + startId + ": " + intent);
 		// We want this service to continue running until it is explicitly
 		// stopped, so return sticky.
-		Toast.makeText(this, "onStartCommand", Toast.LENGTH_SHORT).show();
+		//Toast.makeText(this, "onStartCommand", Toast.LENGTH_SHORT).show();
 		
 		Location startLoc = mlocMgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 		getRoutePointData(startLoc);
@@ -164,7 +164,7 @@ public class RunningService extends Service
 		mlocMgr.removeUpdates(mlocListener); //unregister
 		
 		/** TESTING **/
-		System.out.println("STOP");
+		/*System.out.println("STOP");
 		ArrayList<MyGeoPoint> route = MainActivity.DataBase.GetPoints(routeKeyDB);
 		for(int i = 0; i < route.size(); i++)
 		{
@@ -172,10 +172,10 @@ public class RunningService extends Service
 			System.out.println(testPt.getTypeAsString() + " " + "lat: " 
 					+ testPt.getPoint().getLatitudeE6()  + " long: " + testPt.getPoint().getLongitudeE6()
 					+ " " + testPt.getTimeAsString());
-		}
+		}*/
 
 		// Tell the user we stopped.
-		Toast.makeText(this, R.string.local_service_stopped, Toast.LENGTH_SHORT).show();
+		//Toast.makeText(this, R.string.local_service_stopped, Toast.LENGTH_SHORT).show();
 	}
 
 	
