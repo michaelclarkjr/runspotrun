@@ -83,7 +83,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
         
         if (cur.moveToFirst())
         {
-        	cur.close();
+        	//cur.close(); //don't close here since it is being passed..
         	return SetRouteFromCursor(cur);
         }
         else
@@ -195,6 +195,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
     	route.setTime(cur.getString(cur.getColumnIndex("StartTime")));
     	route.setDistance((int)cur.getLong(cur.getColumnIndex("Distance"))); 
     	
+    	//cur.close(); //not close here since this same cursor is continue to be used in GetRoutes()
     	return route;
 	}
 	
