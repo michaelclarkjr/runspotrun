@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.View;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,8 +25,7 @@ public class RouteInfoActivity extends Activity {
 	private int routeKeyDB;
 	private RouteItem route;
 	
-	private TextView tvDate, tvTime, tvDistance, tvSpeed;
-	
+	private TextView tvDate, tvTime, tvDistance, tvSpeed;	
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -69,17 +67,7 @@ public class RouteInfoActivity extends Activity {
 	}
 	
 	public void doMapIt(View button)
-	{
-//		ArrayList<MyGeoPoint> route = new ArrayList<MyGeoPoint>();
-//		route.add(new MyGeoPoint(39313623,	-84282732));
-//		route.add(new MyGeoPoint(39313847,	-84283859));
-//		route.add(new MyGeoPoint(39314694,	-84284137));
-//		route.add(new MyGeoPoint(39315831,	-84281509));
-//		route.add(new MyGeoPoint(39318919,	-84279041));
-//		route.add(new MyGeoPoint(39321500,	-84273033));
-//		route.add(new MyGeoPoint(39319724,	-84271874));
-//		route.add(new MyGeoPoint(39314188,	-84277571));
-		 
+	{		 
 		ArrayList<MyGeoPoint> route = MainActivity.DataBase.GetPoints(routeKeyDB);
 		Intent launchMap = new Intent(this, RunMapActivity.class);
 		launchMap.putExtra("Route", route);
@@ -118,20 +106,10 @@ public class RouteInfoActivity extends Activity {
 				sb.append(String.format("%s %s %s %s\n", point.toString(), time, date, distance));
 			}
 			
-			//sb.append("More route info here!\n");
-			
 			Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:" + email + 
 					"?subject=" + Uri.encode(subject) +  
 					"&body=" + Uri.encode(sb.toString())));
 			startActivity(intent);
-				
-	//easy way but shows other intents that are NOT just email.
-	//		Intent intent = new Intent(Intent.ACTION_SEND);
-	//		intent.setType("text/plain");
-	//		intent.putExtra(Intent.EXTRA_EMAIL  , new String[]{email});
-	//		intent.putExtra(Intent.EXTRA_SUBJECT, "subject of email");
-	//		intent.putExtra(Intent.EXTRA_TEXT   , "body of email");
-	//		startActivity(Intent.createChooser(intent, "Send mail..."));
 		
 		} catch (Exception ex) {					
 			new AlertDialog.Builder(this)
@@ -155,6 +133,10 @@ public class RouteInfoActivity extends Activity {
 				{
 					//remove route from DB and return
 					MainActivity.DataBase.DeleteRoute(routeKeyDB);
+					
+					Toast
+					.makeText(RouteInfoActivity.this, "Route Deleted.", Toast.LENGTH_LONG)
+					.show();
 					
 					//return
 					finish();
