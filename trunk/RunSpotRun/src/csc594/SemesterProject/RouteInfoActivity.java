@@ -49,6 +49,9 @@ public class RouteInfoActivity extends Activity {
 	    tvDate.setText(route.getDate());
 	    tvTime.setText(route.getTime());
 	    tvDistance.setText(route.getDistance().toString());
+	    
+	    //calculate Average speed
+	    tvSpeed.setText("");
 	}
 	
 	@Override
