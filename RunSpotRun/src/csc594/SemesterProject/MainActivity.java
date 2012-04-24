@@ -1,78 +1,47 @@
 package csc594.SemesterProject;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.Service;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.content.SharedPreferences;
-//import android.location.Location;
-import android.os.Binder;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
+
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-//Track Route
-import csc594.SemesterProject.MyGeoPoint.MyPointType;
-
-
-import java.util.Calendar;
-import java.text.SimpleDateFormat;
 import android.os.SystemClock;
-import android.preference.PreferenceManager;
 import android.provider.Settings;
-import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Chronometer;
-import android.widget.TableLayout;
+
 
 public class MainActivity extends Activity implements OnClickListener
 {
 	//publicly available database entry - this will be set by main app onCreate
 	public static DatabaseHelper DataBase;
 	
-	//service to grab GPS points
-	//private Intent RunIntent;
-	
 	public static final int MENU_SETTINGS = Menu.FIRST+1;
 	public static final int MENU_ABOUT = Menu.FIRST+2;
 	private ListView listview;
     private ArrayList<RouteItem> mListItem;
     
- 
-    //private Button pauseBtn;
     private Button startBtn;
     private Button stopBtn;
     private Chronometer chronTimer;
-    //private long timeWhenStopped = 0;
     private ProgressBar progressBar;
     
 	private LocationManager mlocMgr;
-    
     
     /** Called when the activity is first created. */
     @Override
@@ -84,11 +53,10 @@ public class MainActivity extends Activity implements OnClickListener
         listview = (ListView) findViewById(R.id.list_view);
         startBtn = (Button)findViewById(R.id.start);
         stopBtn = (Button)findViewById(R.id.stop);
-        stopBtn.setVisibility(View.GONE); 
-		//pauseBtn = (Button)findViewById(R.id.pause);		
+        stopBtn.setVisibility(View.GONE); 	
 		chronTimer = (Chronometer)findViewById(R.id.timer);
 		progressBar = (ProgressBar) findViewById(R.id.progressBar1);
-		progressBar.setVisibility(View.INVISIBLE); //simple way to not have a spinning wheel 
+		progressBar.setVisibility(View.INVISIBLE); //no spinning wheel 
 													//before route is in progress
 		DataBase = new DatabaseHelper(this);
 		
@@ -101,7 +69,7 @@ public class MainActivity extends Activity implements OnClickListener
     @Override
  	public void onResume() 
  	{
- 		super.onResume();  //not sure on this yet
+ 		super.onResume();  
  	}
  	
  	@Override
@@ -115,75 +83,26 @@ public class MainActivity extends Activity implements OnClickListener
  	{
  	    super.onDestroy();
  	}
- 	
- 	
-    /* TIMER - PAUSE - RESET - Works but doesn't make sense to use; without it pausing
-     * and/or deleting & recreating route points */
-   /* private void doPauseResetTimer(String action)
-	{
-		if(action.equals("reset"))
-		{
-			chronTimer.setBase(SystemClock.elapsedRealtime());
-			timeWhenStopped = 0;
-		}
-		else if((action.equals("pause")) && (pauseBtn.getText().equals("Pause")))
-		{
-			timeWhenStopped = chronTimer.getBase() - SystemClock.elapsedRealtime();
-			chronTimer.stop();
-			pauseBtn.setText("Resume");
-		}
-		else //resume
-		{
-			chronTimer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
-			chronTimer.start();
-			pauseBtn.setText("Pause");
-		}
-		
-	}
-    
-	public void doResetTimer(View view)
-	{    	
-		doPauseResetTimer("reset");
-	}
-	 
-	
-	public void doPauseTimer(View view)
-	{    	
-		doPauseResetTimer("pause");
-	}*/
-        
-	private String getElapsedTimeString() 
-	{       
-		long elapsedTime = SystemClock.elapsedRealtime() - chronTimer.getBase();
-		  
-	    elapsedTime = elapsedTime / 1000;  
-	    String seconds = String.format("%s second(s)", elapsedTime % 60);  
-	    String minutes = String.format("%s minute(s)", (elapsedTime % 3600) / 60);  
-	    String hours = String.format("%s hours(s)", elapsedTime / 3600);  
-	    String time =  hours + " " + minutes + " " + seconds;  
-	    return time;  
-	}
-	
 
-	 /* START - STOP Btns (start/stop timer and start/end (GPS Track Route) Service) */
-	
-	private void promptUserToTurnOnGPS()
-	{
-		new AlertDialog.Builder(this)
-		.setTitle("GPS Provider Must Be Enabled")
-		.setMessage("This app requires GPS to be enabled " +
-				"for accurate route tracking. Would you like to be" +
-				" redirected to enable it?")
-				.setCancelable(false)  
-				.setPositiveButton("Yes", new DialogInterface.OnClickListener() {  
-					public void onClick(DialogInterface dialog, int id) {  
-						Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);  
-						startActivityForResult(intent, 1);  
-					}  
-				})  
-				.setNegativeButton("No", null)
-				.show();  
-	}
+ 	/* START - STOP Btns (start/stop timer and start/end (GPS Track Route) Service) */
+
+ 	private void promptUserToTurnOnGPS()
+ 	{
+ 		new AlertDialog.Builder(this)
+ 		.setTitle("GPS Provider Must Be Enabled")
+ 		.setMessage("This app requires GPS to be enabled " +
+ 				"for accurate route tracking. Would you like to be" +
+ 				" redirected to enable it?")
+ 				.setCancelable(false)  
+ 				.setPositiveButton("Yes", new DialogInterface.OnClickListener() {  
+ 					public void onClick(DialogInterface dialog, int id) {  
+ 						Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);  
+ 						startActivityForResult(intent, 1);  
+ 					}  
+ 				})  
+ 				.setNegativeButton("No", null)
+ 				.show();  
+ 	}
 
 	public void doStartRoute(View view)
 	{	
@@ -195,18 +114,8 @@ public class MainActivity extends Activity implements OnClickListener
 		}
 		else /* Don't continue with route till user turns GPS on */
 		{
-			//easy way
+				//gather gps points in service
 			startService(new Intent(this, RunningService.class));
-			//if(RunIntent == null){RunIntent = new Intent(this, RunningService.class);}
-			//startService(RunIntent);  //intend to create this in onCreate()?
-
-
-			//hard way...
-			/* Intent i = new Intent();
-		       i.setClassName( "csc594.SemesterProject",
-		        "csc594.SemesterProject.RunningService" );
-		       bindService( i, null, Context.BIND_AUTO_CREATE);
-		       this.startService(i); */
 
 			chronTimer.setBase(SystemClock.elapsedRealtime());
 			chronTimer.start();
@@ -227,16 +136,20 @@ public class MainActivity extends Activity implements OnClickListener
 		/*Toast.makeText(this, "Route has been added to top of 'Past Trips' - Click on it to" +
 				" view statistics, map it, or delete route from history. ", Toast.LENGTH_LONG).show();*/
 		
-		new AlertDialog.Builder(this)
+		/*new AlertDialog.Builder(this)
  		  .setTitle("Completed Trip")
  		  .setMessage(R.string.finished_route_in_list)
  		  .setNeutralButton("OK", null)
- 		  .show();
+ 		  .show();*/
 		
+		stopService(new Intent(this, RunningService.class));
 		
 		UpdateTripHistory(); //newly finished route will be at top of the list
 		
-		stopService(new Intent(this, RunningService.class));
+		final RouteItem listItem_NewRoute = (RouteItem)listview.getAdapter().getItem(0);
+		Intent myIntent = new Intent(MainActivity.this, RouteInfoActivity.class);
+        myIntent.putExtra("ROUTEKEY", listItem_NewRoute.getKey());
+        startActivity(myIntent);
 	}
 		
 	public void doEndRoute(View view)
@@ -246,6 +159,7 @@ public class MainActivity extends Activity implements OnClickListener
 		
   
 	/* SETTINGS */
+	
     @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu
@@ -279,7 +193,8 @@ public class MainActivity extends Activity implements OnClickListener
 	}
     
     // ***ListAdapter***
-    private class ListAdapter extends ArrayAdapter { //--CloneChangeRequired
+    private class ListAdapter extends ArrayAdapter 
+    { //--CloneChangeRequired
         private ArrayList mList; //--CloneChangeRequired
         private Context mContext;
  
@@ -308,13 +223,9 @@ public class MainActivity extends Activity implements OnClickListener
                     	.setText(listItem.getDistance().toString() + " Miles");
                     view.setOnClickListener(new OnClickListener() {
                         public void onClick(View arg0) { //--clickOnListItem
-//                        	Toast
-//	                  		  .makeText(MainActivity.this, "onClick list adapter",Toast.LENGTH_LONG)
-//	                  		  .show();
 							Intent myIntent = new Intent(MainActivity.this, RouteInfoActivity.class);
                             myIntent.putExtra("ROUTEKEY", listItem.getKey());
                             startActivity(myIntent);
-//                            finish();
                         }
                     });
                 }
@@ -324,5 +235,5 @@ public class MainActivity extends Activity implements OnClickListener
             return view;
         }
     }	   
-}
+} /* End of MainActivity() */
 
