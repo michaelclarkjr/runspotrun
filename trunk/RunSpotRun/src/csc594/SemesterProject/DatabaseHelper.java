@@ -29,7 +29,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	public void onCreate(SQLiteDatabase db) 
 	{
 		db.execSQL("CREATE TABLE Route (_id INTEGER PRIMARY KEY ASC, Name TEXT, Date TEXT, StartTime TEXT, EndTime TEXT, Distance TEXT);");
-		db.execSQL("CREATE TABLE Point (_id INTEGER PRIMARY KEY ASC, FOREIGN KEY(RouteID) REFERENCES Route(_id), Latitude INTEGER, Longitude INTEGER, Time TEXT, Distance TEXT);");
+		db.execSQL("CREATE TABLE Point (_id INTEGER PRIMARY KEY ASC, RouteID INTEGER, Latitude INTEGER, Longitude INTEGER, Time TEXT, Distance TEXT);");
 	}
 
 	@Override
