@@ -8,9 +8,9 @@
              
         <ListPreference 
             android:key="intervalKey"
-            android:summary="The interval at which the GPS is polled during a jog"
+            android:summary="The interval at which the GPS pts. are stored during a jog"
             android:title="Interval"
-            android:defaultValue="1" 
+            android:defaultValue="5" 
             android:entries="@array/updateInterval"
             android:entryValues="@array/updateIntervalValues" /> 
     </PreferenceCategory>
