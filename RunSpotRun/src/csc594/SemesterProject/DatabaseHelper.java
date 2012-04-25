@@ -121,26 +121,13 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		String SQL = "SELECT * FROM Point WHERE RouteID = ?";
         Cursor cur = this.getReadableDatabase().rawQuery(SQL, new String[] { Integer.toString(routeKey) });
         int count = 0;
-        MyGeoPoint.MyPointType type;
         
         if (cur.moveToFirst())
         {        
 	        while (!cur.isAfterLast())
 	        {
-	        	if (cur.isFirst())
-	        	{
-	        		type = MyGeoPoint.MyPointType.Start;
-	        	}
-	        	else if (cur.isLast())
-	        	{
-	        		type = MyGeoPoint.MyPointType.Stop;
-	        	}
-	        	else
-	        	{
-	        		type = MyGeoPoint.MyPointType.Normal;
-	        	}
 	        	
-	        	points.add(SetPointFromCursor(cur, "Point" + Integer.toString(count), type));
+	        	points.add(SetPointFromCursor(cur, "Point" + Integer.toString(count)));
 	        	
 	        	cur.moveToNext();
 	        	count++;
@@ -219,14 +206,14 @@ public class DatabaseHelper extends SQLiteOpenHelper
     	return route;
 	}
 	
-	private MyGeoPoint SetPointFromCursor(Cursor cur, String name, MyPointType type)
+	private MyGeoPoint SetPointFromCursor(Cursor cur, String name)
 	{
 		int latitude = (int)cur.getLong(cur.getColumnIndex("Latitude"));
 		int longitude = (int)cur.getLong(cur.getColumnIndex("Longitude"));
 		String time = cur.getString(cur.getColumnIndex("Time"));
 		String distance = Double.toString(cur.getDouble(cur.getColumnIndex("Time")));
 		
-		MyGeoPoint point = new MyGeoPoint(latitude, longitude, time, distance, name, type);
+		MyGeoPoint point = new MyGeoPoint(latitude, longitude, time, distance, name, MyGeoPoint.MyPointType.Normal);
     	
     	return point;
 	}
