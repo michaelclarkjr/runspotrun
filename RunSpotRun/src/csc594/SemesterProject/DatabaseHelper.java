@@ -49,6 +49,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		}
 		catch (Exception ex)
 		{
+			System.out.print("onCreate Force DB error ");
 			System.out.println(ex.toString());
 		}
 	}
@@ -98,7 +99,10 @@ public class DatabaseHelper extends SQLiteOpenHelper
         if (cur.moveToFirst())
         {
         	//cur.close(); //don't close here since it is being passed..
-        	return SetRouteFromCursor(cur);
+        	//return SetRouteFromCursor(cur); //still error, was never getting close from this method
+        	RouteItem route = SetRouteFromCursor(cur);
+        	cur.close(); 
+        	return route;
         }
         else
         {
