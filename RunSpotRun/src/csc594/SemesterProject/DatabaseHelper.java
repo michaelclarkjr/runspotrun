@@ -30,8 +30,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	{
 		try
 		{
-			db.execSQL("CREATE TABLE Route (_id INTEGER PRIMARY KEY ASC, Name TEXT, Date TEXT, StartTime TEXT, EndTime TEXT, Distance TEXT);");
-			db.execSQL("CREATE TABLE Point (_id INTEGER PRIMARY KEY ASC, RouteID INTEGER, Latitude INTEGER, Longitude INTEGER, Time TEXT, Distance TEXT);");
+			db.execSQL("CREATE TABLE Route (_id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Date TEXT, StartTime TEXT, EndTime TEXT, Distance TEXT);");
+			db.execSQL("CREATE TABLE Point (_id INTEGER PRIMARY KEY AUTOINCREMENT, RouteID INTEGER, Latitude INTEGER, Longitude INTEGER, Time TEXT, Distance TEXT);");
 		}
 		catch (Exception ex)
 		{
@@ -43,8 +43,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	{
 		try
 		{
-			db.execSQL("CREATE TABLE Route (_id INTEGER PRIMARY KEY ASC, Name TEXT, Date TEXT, StartTime TEXT, EndTime TEXT, Distance TEXT);");
-            db.execSQL("CREATE TABLE Point (_id INTEGER PRIMARY KEY ASC, RouteID INTEGER, Latitude INTEGER, Longitude INTEGER, Time TEXT, Distance TEXT);");
+			db.execSQL("CREATE TABLE Route (_id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Date TEXT, StartTime TEXT, EndTime TEXT, Distance TEXT);");
+            db.execSQL("CREATE TABLE Point (_id INTEGER PRIMARY KEY AUTOINCREMENT, RouteID INTEGER, Latitude INTEGER, Longitude INTEGER, Time TEXT, Distance TEXT);");
             System.out.print("onCreate Force DB");
 		}
 		catch (Exception ex)
@@ -168,7 +168,9 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		cv.put("Time", point.getTime());
 		cv.put("Distance", point.getDistance());
 		
-		UpdateRoute(point.getDistance(), point.getTime(), routeKey);
+		String distance = point.getDistance();//UpdateDistance(point.getDistance(), routeKey);
+		
+		UpdateRoute(distance, point.getTime(), routeKey);
 		
 		return this.getWritableDatabase().insert("Point", "RouteID", cv);
 	}
@@ -227,5 +229,30 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		MyGeoPoint point = new MyGeoPoint(latitude, longitude, time, distance, name, type);
     	
     	return point;
+	}
+
+	private String UpdateDistance(String currentDistance, int routeKey)
+	{
+		double oldDistance = 0;
+		String SQL = "SELECT * FROM Point WHERE RouteID = ? ORDER BY Time DESC";
+        Cursor cur = this.getReadableDatabase().rawQuery(SQL, new String[] { Integer.toString(routeKey) });
+        
+        if (cur.moveToFirst())
+        {        
+	        while (!cur.isAfterLast())
+	        {
+	        	if (cur.isLast())
+	        	{
+	        		oldDistance = Double.parseDouble(cur.getString(cur.getColumnIndex("Distance")));
+	        	}
+	        }
+	        
+	        cur.close();
+			return Double.toString(Double.parseDouble(currentDistance) - oldDistance);
+        }
+        else
+        {	
+        	return currentDistance;
+        }
 	}
 }
