@@ -96,21 +96,26 @@ public class RouteInfoActivity extends Activity {
 				.show();
 				//return;//dont return just keep going
 			}
-			String subject = "Jogging route from " + tvDate.getText().toString();
+			
+			RouteItem route = MainActivity.DataBase.GetRoute(routeKeyDB);
+			ArrayList<MyGeoPoint> points = MainActivity.DataBase.GetPoints(routeKeyDB);
+						
+			String subject = "Jogging route " + route.getDate();
 			StringBuilder sb = new StringBuilder();
-			ArrayList<MyGeoPoint> route = MainActivity.DataBase.GetPoints(routeKeyDB);
 			
 			GeoPoint point;
 			String date, time, distance;
 			
 			sb.append("Route info:\n");
-			for(int i=0;i<route.size(); i++)
+			sb.append("Date: " + route.getDate() + "\n");
+			sb.append("Time: " + route.getTime() + "\n");
+			sb.append("Distance: " + Double.toString(route.getDistance()) + " miles\n\n");
+			
+			sb.append("Points:\n");
+			for(int i=0;i<points.size(); i++)
 			{				
-				point = route.get(i).getPoint();
-				time = route.get(i).getTime();
-				date = "date";// route.get(i).getDate();				
-				distance = route.get(i).getDistance();
-				sb.append(String.format("%s %s %s %s\n", point.toString(), time, date, distance));
+				point = points.get(i).getPoint();		
+				sb.append(String.format("%s, %s\n", Integer.toString(point.getLatitudeE6()), Integer.toString(point.getLongitudeE6())));
 			}
 			
 			Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:" + email + 
