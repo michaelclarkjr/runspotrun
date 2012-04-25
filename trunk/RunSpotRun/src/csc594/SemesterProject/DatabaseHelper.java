@@ -122,20 +122,16 @@ public class DatabaseHelper extends SQLiteOpenHelper
         Cursor cur = this.getReadableDatabase().rawQuery(SQL, new String[] { Integer.toString(routeKey) });
         int count = 0;
         
-        
-        
         if (cur.moveToFirst())
         {        
-        	boolean cont = true;
-	        //while (!cur.isAfterLast())
-        	while(cont)
-	        {
-	        	
+        	boolean cont;
+        	do
+	        {	        	
 	        	points.add(SetPointFromCursor(cur, "Point" + Integer.toString(count)));
 	        	
 	        	cont = cur.moveToNext();
 	        	count++;
-	        }
+	        }while(cont);
         }
         
         cur.close();
