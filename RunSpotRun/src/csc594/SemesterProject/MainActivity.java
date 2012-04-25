@@ -18,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import android.os.SystemClock;
 import android.provider.Settings;
@@ -80,7 +81,7 @@ public class MainActivity extends Activity implements OnClickListener
  	}
     
  	@Override
- 	protected void onDestroy() //stop service?
+ 	protected void onDestroy() 
  	{
  	    super.onDestroy();
  	}
@@ -146,6 +147,8 @@ public class MainActivity extends Activity implements OnClickListener
 		stopService(new Intent(this, RunningService.class));
 		
 		UpdateTripHistory(); //newly finished route will be at top of the list
+		
+		Toast.makeText(this, "Finished Trip!", Toast.LENGTH_SHORT).show();
 		
 		final RouteItem listItem_NewRoute = (RouteItem)listview.getAdapter().getItem(0);
 		Intent myIntent = new Intent(MainActivity.this, RouteInfoActivity.class);
