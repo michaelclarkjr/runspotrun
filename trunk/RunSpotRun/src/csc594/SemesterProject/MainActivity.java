@@ -59,6 +59,7 @@ public class MainActivity extends Activity implements OnClickListener
 		progressBar.setVisibility(View.INVISIBLE); //no spinning wheel 
 													//before route is in progress
 		DataBase = new DatabaseHelper(this);
+		DataBase.ForceCreate(DataBase.getWritableDatabase());
 		
 		UpdateTripHistory();
 		
@@ -149,7 +150,7 @@ public class MainActivity extends Activity implements OnClickListener
 		final RouteItem listItem_NewRoute = (RouteItem)listview.getAdapter().getItem(0);
 		Intent myIntent = new Intent(MainActivity.this, RouteInfoActivity.class);
         myIntent.putExtra("ROUTEKEY", listItem_NewRoute.getKey());
-        startActivity(myIntent);
+        startActivityForResult(myIntent, 0);
 	}
 		
 	public void doEndRoute(View view)
@@ -157,7 +158,13 @@ public class MainActivity extends Activity implements OnClickListener
 		endRoute();
 	}
 		
-  
+	@Override
+	protected void onActivityResult(int requestCode,
+							int resultCode, Intent data) 
+	{
+		UpdateTripHistory();
+	}
+	
 	/* SETTINGS */
 	
     @Override
@@ -225,7 +232,7 @@ public class MainActivity extends Activity implements OnClickListener
                         public void onClick(View arg0) { //--clickOnListItem
 							Intent myIntent = new Intent(MainActivity.this, RouteInfoActivity.class);
                             myIntent.putExtra("ROUTEKEY", listItem.getKey());
-                            startActivity(myIntent);
+                            startActivityForResult(myIntent, 0);
                         }
                     });
                 }
