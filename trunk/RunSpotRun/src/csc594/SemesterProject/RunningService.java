@@ -86,12 +86,12 @@ public class RunningService extends Service
 		// Display a notification about us starting.  We put an icon in the status bar.
 		showNotification();
 
-		latitude = 0;
-		longitude = 0;
+		//latitude = 0;
+		//longitude = 0;
 		//curDate = fmt1.format(cal.getTime());
-		routeName = "testRoute";
+		routeName = "newRoute";
 		curTime = fmt2.format(cal.getTime());
-		curDist = "1.1"; //test dist
+		curDist = "0"; //placeHolder
 
 		//route = new ArrayList<MyGeoPoint>();
 	    routeKeyDB = 0;
@@ -100,9 +100,12 @@ public class RunningService extends Service
 
 		mlocListener = new MyLocationListener();
  		
-        mlocMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mlocListener);
+        mlocMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60000, 1, mlocListener);
         			//provider, minTime in ms, minDistance in meters, Location Listener
-        					//minTime minDistance - hints not rules *might be better to use something else for set intervals*
+        					//minTime minDistance - hints not rules *0,0 as often as possible*
+        //bkground services should be careful abt. setting sufficiently high minTime so that the 
+        //the device doesn't consume too much power by keeping GPS radio on all the time.
+        //in particular, values under 60000 ms. are not recommended.
 	}
 	
 	
@@ -117,14 +120,16 @@ public class RunningService extends Service
 		Location startLoc = mlocMgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 		getRoutePointData(startLoc);
 		
-		Date curDate = cal.getTime(); //updated in getRoutePointData()
+		//Date curDate = cal.getTime(); //just need once
 		//route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Start));
 		RouteItem item = new RouteItem();
 	    item.setName(routeName);
-	    item.setDate(fmt1.format(cal.getTime()));
+	    item.setDate(fmt1.format(cal.getTime())); //current date -  just need once
 	    item.setTime(curTime);
-	    item.setDistance(0.0);
+	    item.setDistance(Double.parseDouble(curDist));
+	    
 		routeKeyDB =  (int) MainActivity.DataBase.AddRoute(item); /*this returns long, need int for the key */
+		
 		MainActivity.DataBase.AddPoint(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Start), routeKeyDB);
 
 		/* Timed storing points for rest of the route */
@@ -142,7 +147,8 @@ public class RunningService extends Service
 		try
 		{
 			SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-			interval = Integer.parseInt(sharedPrefs.getString("intervalKey", "1"));
+			interval = Integer.parseInt(sharedPrefs.getString("intervalKey", "5"));
+			System.out.println(interval);
 		}
 		catch(Exception ex)  {	}
 
@@ -164,7 +170,7 @@ public class RunningService extends Service
 		mlocMgr.removeUpdates(mlocListener); //unregister
 		
 		/** TESTING **/
-		/*System.out.println("STOP");
+		System.out.println("STOP");
 		ArrayList<MyGeoPoint> route = MainActivity.DataBase.GetPoints(routeKeyDB);
 		for(int i = 0; i < route.size(); i++)
 		{
@@ -172,7 +178,7 @@ public class RunningService extends Service
 			System.out.println(testPt.getTypeAsString() + " " + "lat: " 
 					+ testPt.getPoint().getLatitudeE6()  + " long: " + testPt.getPoint().getLongitudeE6()
 					+ " " + testPt.getTimeAsString());
-		}*/
+		}
 
 		// Tell the user we stopped.
 		//Toast.makeText(this, R.string.local_service_stopped, Toast.LENGTH_SHORT).show();

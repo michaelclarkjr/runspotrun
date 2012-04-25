@@ -103,7 +103,8 @@ public class RouteInfoActivity extends Activity {
 			String subject = "Jogging route " + route.getDate();
 			StringBuilder sb = new StringBuilder();
 			
-			GeoPoint point;
+			//GeoPoint point;
+			MyGeoPoint point;
 			String date, time, distance;
 			
 			sb.append("Route info:\n");
@@ -113,9 +114,12 @@ public class RouteInfoActivity extends Activity {
 			
 			sb.append("Points:\n");
 			for(int i=0;i<points.size(); i++)
-			{				
-				point = points.get(i).getPoint();		
-				sb.append(String.format("%s, %s\n", Integer.toString(point.getLatitudeE6()), Integer.toString(point.getLongitudeE6())));
+			{		
+				
+				//point = points.get(i).getPoint();		
+				point = points.get(i);
+				//sb.append(String.format("%s, %s\n", Integer.toString(point.getLatitudeE6()), Integer.toString(point.getLongitudeE6())));
+				sb.append(String.format("%s, %s\n", Integer.toString(point.getPoint().getLatitudeE6()), Integer.toString(point.getPoint().getLongitudeE6())));
 			}
 			
 			Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:" + email + 
