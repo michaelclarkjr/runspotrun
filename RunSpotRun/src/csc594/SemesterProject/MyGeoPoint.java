@@ -32,15 +32,15 @@ public class MyGeoPoint implements Parcelable
 		this.mType = type;
 	}
 	
-	public MyGeoPoint(int latitude, int longitude, MyPointType type) 
-	{
-		this(latitude,longitude, "12-1-1 12:12:22","1.1", "",type);
-	}
-	
-	public MyGeoPoint(int latitude, int longitude)
-	{
-		this(latitude,longitude, "12-1-1 12:12:22","1.1", "", MyPointType.Normal);
-	}
+//	public MyGeoPoint(int latitude, int longitude, MyPointType type) 
+//	{
+//		this(latitude,longitude, "12-1-1 12:12:22","1.1", "",type);
+//	}
+//	
+//	public MyGeoPoint(int latitude, int longitude)
+//	{
+//		this(latitude,longitude, "12-1-1 12:12:22","1.1", "", MyPointType.Normal);
+//	}
 
 	public GeoPoint getPoint() {
 		return mPoint;
