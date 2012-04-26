@@ -121,7 +121,7 @@ public class RunningService extends Service
 		//Toast.makeText(this, "onStartCommand", Toast.LENGTH_SHORT).show();
 		
 		Location startLoc = mlocMgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-		getRoutePointData(startLoc);
+		updateLatLong(startLoc);
 		
 		//Date curDate = cal.getTime(); //just need once
 		//route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Start));
@@ -167,7 +167,7 @@ public class RunningService extends Service
 	{
 		// Cancel the persistent notification.
 		mNM.cancel(NOTIFICATION);
-		mTimer.cancel();
+		mTimer.cancel(); //stop adding geo pts.
 		
 		cal = Calendar.getInstance(); //update time
 		curTime = fmt2.format(cal.getTime());
@@ -200,10 +200,7 @@ public class RunningService extends Service
    
    /* Helper methods with gathering route point data */
    
-   /* Gets current data about a point in the route: (int) latitude, (int) longitude, (string) time, 
-	  (string) distance, (string) name (as used by the MyGeoPoint Class).
-	  */
-	private void getRoutePointData(Location loc)
+	private void updateLatLong(Location loc)
 	{
 		double lat = 0;
 		double lng = 0;
@@ -217,9 +214,8 @@ public class RunningService extends Service
 		latitude = (int) (lat * 1E6); //compatible with maps api
 		longitude = (int) (lng * 1E6);
 
-		cal = Calendar.getInstance(); //update time
-		//curTime = curDate + " " + fmt2.format(cal.getTime()); 
-		curTime = fmt2.format(cal.getTime());
+		//cal = Calendar.getInstance(); //update time
+		//curTime = fmt2.format(cal.getTime());
 	}    
 
 	GeoPoint lastPoint = null;
@@ -236,6 +232,9 @@ public class RunningService extends Service
 		}
 		lastPoint = newPoint;
 		
+		cal = Calendar.getInstance(); //update time
+		curTime = fmt2.format(cal.getTime());
+		
 		MainActivity.DataBase.AddPoint(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Normal), routeKeyDB);
 	}
 
@@ -251,7 +250,8 @@ public class RunningService extends Service
 		@Override
 		public void onLocationChanged(Location loc)
 		{
-			getRoutePointData(loc); //update route point data
+			//getRoutePointData(loc); //update route point data
+			updateLatLong(loc);
 		}	
 
 		@Override	
