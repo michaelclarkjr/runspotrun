@@ -228,7 +228,8 @@ public class RunningService extends Service
 		{
 			//calc distance
 			distance = GetDistance(lastPoint, newPoint);
-			curDist = Double.toString(distance);
+			curDist = String.format("%.2f", distance); 
+			//curDist = Double.toString(distance);
 		}
 		lastPoint = newPoint;
 		
@@ -243,10 +244,9 @@ public class RunningService extends Service
 		try
 		{
 			float[] dist = new float[3];
-			//Location.distanceBetween(p1.getLatitudeE6(), p1.getLongitudeE6(), p2.getLatitudeE6(), p2.getLongitudeE6(), dist);
-			Location.distanceBetween(3932394,-84307652, 39324073,-84289284, dist);
-			
-			return dist[0] * 0.000621371192 / 5280;//meters to miles
+			Location.distanceBetween(p1.getLatitudeE6()/1E6, p1.getLongitudeE6()/ 1E6, p2.getLatitudeE6()/ 1E6, p2.getLongitudeE6()/ 1E6, dist);
+			//Location.distanceBetween(3932394,-84307652, 39324073,-84289284, dist);			
+			return dist[0] * 0.000621371192;//meters to miles
 		}
 		catch(Exception e)
 		{
