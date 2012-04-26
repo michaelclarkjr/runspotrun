@@ -100,7 +100,6 @@ public class RunMapActivity extends MapActivity
 		
 		RunMapActivity.LineColor = Color.parseColor(sharedPrefs.getString("linecolorKey", "#FFFF0000"));
 		RunMapActivity.LineWidth =Integer.parseInt(sharedPrefs.getString("linewidthKey", "2"));
-
     }
     
     @Override
@@ -120,17 +119,6 @@ public class RunMapActivity extends MapActivity
 		.add(Menu.NONE, MENU_ABOUT, 1, "About")
 		.setIntent(new Intent(this, AboutActivity.class))		
 		.setIcon(R.drawable.about);
-		
-//		menu
-//		.add(Menu.NONE, MENU_SATELLITE, 2, "Satellite")
-//		.setOnMenuItemClickListener(new OnMenuItemClickListener(){
-//			   @Override
-//	           public boolean onMenuItemClick(MenuItem item){
-//				   mapView.setSatellite(!mapView.isSatellite());
-//	               return true;
-//	           }
-//	       })	
-//		.setIcon(R.drawable.about);
 		
 		return(super.onCreateOptionsMenu(menu));
 	}
