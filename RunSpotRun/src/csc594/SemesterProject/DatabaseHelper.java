@@ -230,7 +230,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		int latitude = (int)cur.getLong(cur.getColumnIndex("Latitude"));
 		int longitude = (int)cur.getLong(cur.getColumnIndex("Longitude"));
 		String time = cur.getString(cur.getColumnIndex("Time"));
-		String distance = Double.toString(cur.getDouble(cur.getColumnIndex("Time")));
+		String distance = Double.toString(cur.getDouble(cur.getColumnIndex("Distance")));
 		
 		MyGeoPoint point = new MyGeoPoint(latitude, longitude, time, distance, name, MyGeoPoint.MyPointType.Normal);
     	
@@ -239,6 +239,9 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	
 	private String CalculateDuration(String start, String end)
 	{
+		
+		//String.format("%d:%02d:%02d", s/3600, (s%3600)/60, (s%60))
+		
 		return "";
 	}
 }
