@@ -1,6 +1,7 @@
 package csc594.SemesterProject;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -111,6 +112,40 @@ public class DatabaseHelper extends SQLiteOpenHelper
         	return new RouteItem();
         }
     }
+	
+	String GetStartTime(int routeKey)
+	{
+		//return the duration of the route for given route key			
+				String SQL = "SELECT * FROM Route WHERE _id = ?";
+				Cursor cur = this.getReadableDatabase().rawQuery(SQL, new String[] { Integer.toString(routeKey) });
+				        
+				if (cur.moveToFirst())
+				{
+					return cur.getString(cur.getColumnIndex("StartTime"));
+				}
+				else
+				{
+					cur.close();
+					return "NOOOO!";
+				}
+	}
+	
+	String GetStopTime(int routeKey)
+	{
+		//return the duration of the route for given route key			
+			String SQL = "SELECT * FROM Route WHERE _id = ?";
+			Cursor cur = this.getReadableDatabase().rawQuery(SQL, new String[] { Integer.toString(routeKey) });
+			        
+			if (cur.moveToFirst())
+			{
+				return cur.getString(cur.getColumnIndex("StopTime"));
+			}
+			else
+			{
+				cur.close();
+				return "NOOOO!";
+			}
+	}
 	
 	String GetRouteDuration(int routeKey)
 	{
@@ -249,12 +284,11 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	
 	private String CalculateDuration(String start, String end) throws Exception
 	{
-		DateFormat df = DateFormat.getDateInstance();  
-		
+		SimpleDateFormat fmt2 = new SimpleDateFormat("hh:mm:ss a");
 		try
 		{
-			Date startDate = df.parse(start);
-			Date endDate = df.parse(end);
+			Date startDate = fmt2.parse(start);
+			Date endDate = fmt2.parse(end);
 		
 			long s = endDate.getTime() - startDate.getTime();
 		
