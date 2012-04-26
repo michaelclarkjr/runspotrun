@@ -55,7 +55,7 @@ public class RouteInfoActivity extends Activity {
 	    tvSpeed.setText("");
 	    
 	    //calculate Duration (can be grabbed from the timer..)
-	    //tvDuration.setText(MainActivity.DataBase.GetRouteDuration(routeKeyDB));
+	    tvDuration.setText(MainActivity.DataBase.GetRouteDuration(routeKeyDB));
 	}
 	
 	@Override
