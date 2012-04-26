@@ -230,7 +230,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		int latitude = (int)cur.getLong(cur.getColumnIndex("Latitude"));
 		int longitude = (int)cur.getLong(cur.getColumnIndex("Longitude"));
 		String time = cur.getString(cur.getColumnIndex("Time"));
-		String distance = Double.toString(cur.getDouble(cur.getColumnIndex("Distance")));
+		String distance = cur.getString(cur.getColumnIndex("Distance"));
 		
 		MyGeoPoint point = new MyGeoPoint(latitude, longitude, time, distance, name, MyGeoPoint.MyPointType.Normal);
     	
