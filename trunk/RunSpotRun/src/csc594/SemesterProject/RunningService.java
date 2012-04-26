@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.google.android.maps.GeoPoint;
+
 import csc594.SemesterProject.MyGeoPoint.MyPointType;
 
 import android.app.Notification;
@@ -25,6 +27,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 //import android.provider.Settings;
+import android.util.Log;
 import android.widget.Toast;
 
 public class RunningService extends Service 
@@ -210,7 +213,7 @@ public class RunningService extends Service
 			lat = loc.getLatitude();
 			lng = loc.getLongitude();
 		}
-
+		
 		latitude = (int) (lat * 1E6); //compatible with maps api
 		longitude = (int) (lng * 1E6);
 
@@ -219,12 +222,30 @@ public class RunningService extends Service
 		curTime = fmt2.format(cal.getTime());
 	}    
 
+	GeoPoint lastPoint = null;
+	
 	private void addToRoute()
 	{
-		//route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Normal));
+		GeoPoint newPoint = new GeoPoint(latitude,longitude);
+		double distance = 0.0;
+		if(lastPoint != null)
+		{
+			//calc distance
+			distance = GetDistance(lastPoint, newPoint);
+			curDist = Double.toString(distance);
+		}
+		lastPoint = newPoint;
+		
 		MainActivity.DataBase.AddPoint(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Normal), routeKeyDB);
 	}
 
+	private double GetDistance(GeoPoint p1, GeoPoint p2)
+	{
+		float[] dist = new float[3];
+		Location.distanceBetween(p1.getLatitudeE6(), p1.getLongitudeE6(), p2.getLatitudeE6(), p2.getLongitudeE6(), dist);
+		return dist[1];
+	}
+	
 	public class MyLocationListener implements LocationListener
 	{
 		@Override
