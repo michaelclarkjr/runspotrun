@@ -1,5 +1,6 @@
 package csc594.SemesterProject;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -122,7 +123,16 @@ public class DatabaseHelper extends SQLiteOpenHelper
 			String startTime = cur.getString(cur.getColumnIndex("StartTime"));
 			String endTime = cur.getString(cur.getColumnIndex("EndTime"));
 			
-			String duration = CalculateDuration(startTime, endTime);
+			String duration = "undefined";
+			
+			try
+			{
+				duration = CalculateDuration(startTime, endTime);
+			}
+			catch (Exception ex)
+			{
+				
+			}
 			
 		 	cur.close(); 
 		 	return duration;
@@ -237,15 +247,22 @@ public class DatabaseHelper extends SQLiteOpenHelper
     	return point;
 	}
 	
-	private String CalculateDuration(String start, String end)
+	private String CalculateDuration(String start, String end) throws Exception
 	{
-		//Date startDate = new Date(start);
-		//Date endDate = new Date(end);
+		DateFormat df = DateFormat.getDateInstance();  
 		
-		//long s = endDate.getTime() - startDate.getTime();
+		try
+		{
+			Date startDate = df.parse(start);
+			Date endDate = df.parse(end);
 		
-		//return String.format("%d:%02d:%02d", s/3600, (s%3600)/60, (s%60));
+			long s = endDate.getTime() - startDate.getTime();
 		
-		return start;
+			return String.format("%d:%02d:%02d", s/3600, (s%3600)/60, (s%60));
+		}	
+		catch (Exception ex)
+		{
+			throw ex;
+		}
 	}
 }
