@@ -229,7 +229,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
     	route.setName(cur.getString(cur.getColumnIndex("Name")));
     	route.setDate(cur.getString(cur.getColumnIndex("Date")));
     	route.setTime(cur.getString(cur.getColumnIndex("StartTime")));
-    	route.setDistance((int)cur.getLong(cur.getColumnIndex("Distance"))); 
+    	route.setDistance(Double.parseDouble(cur.getString(cur.getColumnIndex("Distance")))); 
     	
     	//cur.close(); //not close here since this same cursor is continue to be used in GetRoutes()
     	return route;
