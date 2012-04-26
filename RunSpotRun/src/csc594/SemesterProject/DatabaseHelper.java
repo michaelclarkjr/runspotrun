@@ -110,6 +110,29 @@ public class DatabaseHelper extends SQLiteOpenHelper
         	return new RouteItem();
         }
     }
+	
+	String GetRouteDuration(int routeKey)
+	{
+		//return the duration of the route for given route key			
+		String SQL = "SELECT * FROM Route WHERE _id = ?";
+		Cursor cur = this.getReadableDatabase().rawQuery(SQL, new String[] { Integer.toString(routeKey) });
+		        
+		if (cur.moveToFirst())
+		{
+			String startTime = cur.getString(cur.getColumnIndex("StartTime"));
+			String endTime = cur.getString(cur.getColumnIndex("EndTime"));
+			
+			String duration = CalculateDuration(startTime, endTime);
+			
+		 	cur.close(); 
+		 	return duration;
+		}
+		else
+		{
+			cur.close();
+			return "0";
+		}
+	}
 
 	ArrayList<MyGeoPoint> GetPoints(int routeKey)
 	{
@@ -150,9 +173,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		cv.put("Time", point.getTime());
 		cv.put("Distance", point.getDistance());
 		
-		String distance = point.getDistance();//UpdateDistance(point.getDistance(), routeKey);
-		
-		UpdateRoute(distance, point.getTime(), routeKey);
+		UpdateRoute(point.getDistance(), point.getTime(), routeKey);
 		
 		return this.getWritableDatabase().insert("Point", "RouteID", cv);
 	}
@@ -178,10 +199,13 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		return this.getWritableDatabase().delete("Route", "_id = ?", new String[] { Integer.toString(routeKey) });
 	}
 	
-	private void UpdateRoute(String distance, String endTime, int routeKey)
+	private void UpdateRoute(String newDistance, String endTime, int routeKey)
 	{
+		RouteItem route = GetRoute(routeKey);
+		double currentDistance = route.getDistance();
+		
 		ContentValues cv = new ContentValues();
-	    cv.put("Distance", distance);
+	    cv.put("Distance", Double.parseDouble(newDistance) + currentDistance);
 	    cv.put("EndTime", endTime);
 	    
 	    this.getWritableDatabase().update("Route", cv, "_id = ?", new String[] { Integer.toString(routeKey) });
@@ -212,29 +236,9 @@ public class DatabaseHelper extends SQLiteOpenHelper
     	
     	return point;
 	}
-
-	private String UpdateDistance(String currentDistance, int routeKey)
+	
+	private String CalculateDuration(String start, String end)
 	{
-		double oldDistance = 0;
-		String SQL = "SELECT * FROM Point WHERE RouteID = ? ORDER BY Time DESC";
-        Cursor cur = this.getReadableDatabase().rawQuery(SQL, new String[] { Integer.toString(routeKey) });
-        
-        if (cur.moveToFirst())
-        {        
-	        while (!cur.isAfterLast())
-	        {
-	        	if (cur.isLast())
-	        	{
-	        		oldDistance = Double.parseDouble(cur.getString(cur.getColumnIndex("Distance")));
-	        	}
-	        }
-	        
-	        cur.close();
-			return Double.toString(Double.parseDouble(currentDistance) - oldDistance);
-        }
-        else
-        {	
-        	return currentDistance;
-        }
+		return "";
 	}
 }
