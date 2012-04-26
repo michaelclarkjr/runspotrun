@@ -7,6 +7,7 @@ public class RouteItem
 	private String name;
 	private String date;
 	private String time;
+	private String duration;
 	private double distance;
 	private int key;
 	
@@ -21,6 +22,9 @@ public class RouteItem
 	
 	public String getTime() { return time; }
 	public void setTime(String _time) { this.time = _time; }
+	
+	public String getDuration() { return duration; }
+	public void setDuration(String _dur) { this.duration = _dur; }
 	
 	public Double getDistance() { return distance; }
 	public void setDistance(double _distance) { this.distance = _distance; }
