@@ -130,6 +130,8 @@ public class RunningService extends Service
 	    
 		routeKeyDB =  (int) MainActivity.DataBase.AddRoute(item); /*this returns long, need int for the key */
 		
+		//Toast.makeText(this, String.format("route id: %s", routeKeyDB), Toast.LENGTH_LONG).show();  
+		
 		MainActivity.DataBase.AddPoint(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Start), routeKeyDB);
 
 		/* Timed storing points for rest of the route */
@@ -162,7 +164,8 @@ public class RunningService extends Service
 	{
 		// Cancel the persistent notification.
 		mNM.cancel(NOTIFICATION);
-
+		mTimer.cancel();
+		
 		cal = Calendar.getInstance(); //update time
 		curTime = fmt2.format(cal.getTime());
 		//route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Stop))
@@ -170,15 +173,15 @@ public class RunningService extends Service
 		mlocMgr.removeUpdates(mlocListener); //unregister
 		
 		/** TESTING **/
-		System.out.println("STOP");
-		ArrayList<MyGeoPoint> route = MainActivity.DataBase.GetPoints(routeKeyDB);
-		for(int i = 0; i < route.size(); i++)
-		{
-			MyGeoPoint testPt = route.get(i);
-			System.out.println(testPt.getTypeAsString() + " " + "lat: " 
-					+ testPt.getPoint().getLatitudeE6()  + " long: " + testPt.getPoint().getLongitudeE6()
-					+ " " + testPt.getTimeAsString());
-		}
+//		System.out.println("STOP");
+//		ArrayList<MyGeoPoint> route = MainActivity.DataBase.GetPoints(routeKeyDB);
+//		for(int i = 0; i < route.size(); i++)
+//		{
+//			MyGeoPoint testPt = route.get(i);
+//			System.out.println(testPt.getTypeAsString() + " " + "lat: " 
+//					+ testPt.getPoint().getLatitudeE6()  + " long: " + testPt.getPoint().getLongitudeE6()
+//					+ " " + testPt.getTimeAsString());
+//		}
 
 		// Tell the user we stopped.
 		//Toast.makeText(this, R.string.local_service_stopped, Toast.LENGTH_SHORT).show();
