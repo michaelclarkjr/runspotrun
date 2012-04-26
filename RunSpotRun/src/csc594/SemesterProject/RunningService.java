@@ -134,7 +134,7 @@ public class RunningService extends Service
 		routeKeyDB =  (int) MainActivity.DataBase.AddRoute(item); /*this returns long, need int for the key */
 		
 		//Toast.makeText(this, String.format("route id: %s", routeKeyDB), Toast.LENGTH_LONG).show();  
-		
+		lastPoint = new GeoPoint(latitude, longitude);
 		MainActivity.DataBase.AddPoint(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Start), routeKeyDB);
 
 		/* Timed storing points for rest of the route */
@@ -240,9 +240,16 @@ public class RunningService extends Service
 
 	private double GetDistance(GeoPoint p1, GeoPoint p2)
 	{
-		float[] dist = new float[3];
-		Location.distanceBetween(p1.getLatitudeE6(), p1.getLongitudeE6(), p2.getLatitudeE6(), p2.getLongitudeE6(), dist);
-		return dist[1];
+		try
+		{
+			float[] dist = new float[3];
+			Location.distanceBetween(p1.getLatitudeE6(), p1.getLongitudeE6(), p2.getLatitudeE6(), p2.getLongitudeE6(), dist);
+			return dist[0] * 0.000621371192;//meters to miles
+		}
+		catch(Exception e)
+		{
+			return 0;
+		}
 	}
 	
 	public class MyLocationListener implements LocationListener
