@@ -174,10 +174,10 @@ class MyOverlay extends Overlay
 		//start marker
 		projection.toPixels(points.get(0).getPoint(), p1);
 		//offset into bitmap
-		//xOffset = 16 + 8;//not sure why another half offset is needed...
-		//yOffset = 32 + 16;
-		xOffset = 16;//Lora
-		yOffset = 32;
+		xOffset = 16 + 8;//not sure why another half offset is needed...
+		yOffset = 32 + 16;
+		//xOffset = 16;//Lora works better this way on my phone
+		//yOffset = 32;
 		//---add the marker---
 		bmp = BitmapFactory.decodeResource(
 		    getResources(), R.drawable.start_marker);            
