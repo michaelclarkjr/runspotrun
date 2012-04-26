@@ -188,6 +188,9 @@ class MyOverlay extends Overlay
 		//offset into bitmap
 		xOffset = 9 + 8;
 		yOffset = 32 + 16;
+		//xOffset = 9;//Lora works better this way on my phone
+		//yOffset = 32;
+		
 		//---add the marker---
 		bmp = BitmapFactory.decodeResource(
 		    getResources(), R.drawable.stop_marker);        
