@@ -111,41 +111,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
         	cur.close();
         	return new RouteItem();
         }
-    }
-	
-	String GetStartTime(int routeKey)
-	{
-		//return the duration of the route for given route key			
-				String SQL = "SELECT * FROM Route WHERE _id = ?";
-				Cursor cur = this.getReadableDatabase().rawQuery(SQL, new String[] { Integer.toString(routeKey) });
-				        
-				if (cur.moveToFirst())
-				{
-					return cur.getString(cur.getColumnIndex("StartTime"));
-				}
-				else
-				{
-					cur.close();
-					return "NOOOO!";
-				}
-	}
-	
-	String GetStopTime(int routeKey)
-	{
-		//return the duration of the route for given route key			
-			String SQL = "SELECT * FROM Route WHERE _id = ?";
-			Cursor cur = this.getReadableDatabase().rawQuery(SQL, new String[] { Integer.toString(routeKey) });
-			        
-			if (cur.moveToFirst())
-			{
-				return cur.getString(cur.getColumnIndex("StopTime"));
-			}
-			else
-			{
-				cur.close();
-				return "NOOOO!";
-			}
-	}
+    }	
 	
 	String GetRouteDuration(int routeKey)
 	{
@@ -290,8 +256,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 			Date startDate = fmt2.parse(start);
 			Date endDate = fmt2.parse(end);
 		
-			long s = endDate.getTime() - startDate.getTime();
-		
+			long s = (endDate.getTime() - startDate.getTime()) / 1000;
 			return String.format("%d:%02d:%02d", s/3600, (s%3600)/60, (s%60));
 		}	
 		catch (Exception ex)
