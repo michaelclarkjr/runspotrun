@@ -61,10 +61,13 @@
 	    <TableRow
 	        android:id="@+id/tableRowAvgSpeed"
 	        style="@style/routeInfoRow" >
+
 	        <TextView
 	            android:id="@+id/textView5"
 	            style="@style/fontRouteLabel"
-	            android:text="Average Speed" />
+	            android:text="Average Speed"
+	            android:visibility="invisible" />
+
 	        <TextView
 	            android:id="@+id/tvRouteAvgSpeed"
 	            style="@style/fontRouteInfo"
