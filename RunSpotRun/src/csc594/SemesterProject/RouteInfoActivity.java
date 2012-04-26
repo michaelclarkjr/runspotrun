@@ -103,9 +103,7 @@ public class RouteInfoActivity extends Activity {
 			String subject = "Jogging route " + route.getDate();
 			StringBuilder sb = new StringBuilder();
 			
-			//GeoPoint point;
 			MyGeoPoint point;
-			String date, time, distance;
 			
 			sb.append("Route info:\n");
 			sb.append("Date: " + route.getDate() + "\n");
@@ -115,17 +113,12 @@ public class RouteInfoActivity extends Activity {
 			sb.append("Points:\n");
 			for(int i=0;i<points.size(); i++)
 			{		
-				System.out.println("route info: points size"+points.size());
-				System.out.println("route info: routeKeyDB"+routeKeyDB);
-				//System.out.println("route info i: "+i);
-				//point = points.get(i).getPoint();		
 				point = points.get(i);
-				String type = point.getTypeAsString();
+				
 				String ptTime = point.getTimeAsString();
-				//sb.append(String.format("%s, %s\n", Integer.toString(point.getLatitudeE6()), Integer.toString(point.getLongitudeE6())));
-				//sb.append(String.format("%s, %s\n", Integer.toString(point.getPoint().getLatitudeE6()), Integer.toString(point.getPoint().getLongitudeE6())));
-				sb.append(String.format("%s, %s, %s, %s\n", Integer.toString(point.getPoint().getLatitudeE6()), Integer.toString(point.getPoint().getLongitudeE6()),
-						type, ptTime));
+	
+				sb.append(String.format("%s, %s, %s\n%s\n", point.getName(), Integer.toString(point.getPoint().getLatitudeE6()), 
+						Integer.toString(point.getPoint().getLongitudeE6()), ptTime));
 			}
 			
 			Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:" + email + 
