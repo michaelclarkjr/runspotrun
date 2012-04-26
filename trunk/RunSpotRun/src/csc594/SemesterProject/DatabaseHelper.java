@@ -239,11 +239,13 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	
 	private String CalculateDuration(String start, String end)
 	{
-		Date startDate = new Date(start);
-		Date endDate = new Date(end);
+		//Date startDate = new Date(start);
+		//Date endDate = new Date(end);
 		
-		long s = endDate.getTime() - startDate.getTime();
+		//long s = endDate.getTime() - startDate.getTime();
 		
-		return String.format("%d:%02d:%02d", s/3600, (s%3600)/60, (s%60));
+		//return String.format("%d:%02d:%02d", s/3600, (s%3600)/60, (s%60));
+		
+		return start;
 	}
 }
