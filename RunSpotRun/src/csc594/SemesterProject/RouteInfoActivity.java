@@ -49,7 +49,7 @@ public class RouteInfoActivity extends Activity {
 	    //update screen
 	    tvDate.setText(route.getDate());
 	    tvTime.setText(route.getTime());
-	    tvDistance.setText(route.getDistance().toString());
+	    tvDistance.setText(route.getDistance().toString()+" miles");
 	    
 	    //calculate Average speed
 	    tvSpeed.setText("");

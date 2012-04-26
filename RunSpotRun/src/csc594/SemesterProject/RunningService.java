@@ -120,8 +120,8 @@ public class RunningService extends Service
 		// stopped, so return sticky.
 		//Toast.makeText(this, "onStartCommand", Toast.LENGTH_SHORT).show();
 		
-		Location startLoc = mlocMgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-		updateLatLong(startLoc);
+		//Location startLoc = mlocMgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		//updateLatLong(startLoc);
 		
 		//Date curDate = cal.getTime(); //just need once
 		//route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Start));
@@ -133,9 +133,9 @@ public class RunningService extends Service
 	    
 		routeKeyDB =  (int) MainActivity.DataBase.AddRoute(item); /*this returns long, need int for the key */
 		
-		//Toast.makeText(this, String.format("route id: %s", routeKeyDB), Toast.LENGTH_LONG).show();  
-		lastPoint = new GeoPoint(latitude, longitude);
-		MainActivity.DataBase.AddPoint(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Start), routeKeyDB);
+		 
+		//lastPoint = new GeoPoint(latitude, longitude);
+		//addToRoute();
 
 		/* Timed storing points for rest of the route */
 		gpsUpdate = new TimerTask() {
@@ -152,12 +152,13 @@ public class RunningService extends Service
 		try
 		{
 			SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-			interval = Integer.parseInt(sharedPrefs.getString("intervalKey", "5"));
+			interval = Integer.parseInt(sharedPrefs.getString("intervalKey", "10"));
 			System.out.println(interval);
 		}
 		catch(Exception ex)  {	}
 
-		mTimer.schedule(gpsUpdate, interval * 1000, interval * 1000);  
+		//5 seconds before 1st pt. (more time for GPS to get a 1st Loc.) - then set pts. at user's chosen interval
+		mTimer.scheduleAtFixedRate(gpsUpdate, 5 * 1000, interval * 1000);
 
 		return START_STICKY;
 	}
@@ -169,10 +170,12 @@ public class RunningService extends Service
 		mNM.cancel(NOTIFICATION);
 		mTimer.cancel(); //stop adding geo pts.
 		
-		cal = Calendar.getInstance(); //update time
-		curTime = fmt2.format(cal.getTime());
+		//cal = Calendar.getInstance(); //update time
+		//curTime = fmt2.format(cal.getTime());
 		//route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Stop))
-		MainActivity.DataBase.AddPoint(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Stop), routeKeyDB);
+		//MainActivity.DataBase.AddPoint(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Stop), routeKeyDB);
+		
+		addToRoute();
 		mlocMgr.removeUpdates(mlocListener); //unregister
 		
 		/** TESTING **/
