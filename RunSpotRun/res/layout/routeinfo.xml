@@ -71,7 +71,7 @@
 	        <TextView
 	            android:id="@+id/tvRouteAvgSpeed"
 	            style="@style/fontRouteInfo"
-	            android:text="5.4 MPH" />
+	            android:text="" />
 	    </TableRow>
 	    <TableRow
 	        android:id="@+id/tableRowMapIt"
