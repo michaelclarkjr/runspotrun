@@ -1,8 +1,11 @@
 package csc594.SemesterProject;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -19,6 +22,8 @@ import android.content.Context;
 public class DatabaseHelper extends SQLiteOpenHelper 
 {
 	private static final String DATABASE_NAME="geobase";
+	SimpleDateFormat fmt1 = new SimpleDateFormat("MM/dd/yyyy");
+	SimpleDateFormat fmt2 = new SimpleDateFormat("hh:mm:ss a");
 	Context c;
 	
 	public DatabaseHelper(Context context)
@@ -68,7 +73,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		
 		ArrayList<RouteItem> routes = new ArrayList<RouteItem>();
 		
-		String SQL = "SELECT * FROM Route ORDER BY Date, StartTime DESC";
+		String SQL = "SELECT * FROM Route ORDER BY Date, StartTime ASC";
         Cursor cur = this.getReadableDatabase().rawQuery(SQL, null);
         
         if (cur.moveToFirst())
@@ -79,16 +84,36 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	        	
 	        	cur.moveToNext();
 	        }
-	        
-	        cur.close();
-			return routes;
-        }
-        else
-        {	
-        	
-        	cur.close();
-        	return new ArrayList<RouteItem>();
         }	
+        cur.close();
+                
+        Collections.sort(routes,new Comparator<RouteItem>() {
+            @Override
+			public int compare(RouteItem arg0, RouteItem arg1) {
+            	Date date0, date1, time0, time1;
+            	try 
+            	{
+            		date0 = fmt1.parse(arg0.getDate());
+            		date1 = fmt1.parse(arg1.getDate());
+            		
+            		int dateCompare = date0.compareTo(date1);
+            		
+            		//check if the same day and return if different days
+            		if(dateCompare != 0){ return dateCompare * -1;}//-1 so list is desc order
+            		
+            		//same day, now check times
+            		
+            		time0 = fmt2.parse(arg0.getTime());
+            		time1 = fmt2.parse(arg1.getTime());
+					return time0.compareTo(time1) * -1;
+				} catch (ParseException e) 
+				{
+					return 0;
+				}
+			}
+        });
+            	
+    	return routes;
 	}
 
 	RouteItem GetRoute(int routeKey)
@@ -285,8 +310,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	}
 	
 	private String CalculateDuration(String start, String end) throws Exception
-	{
-		SimpleDateFormat fmt2 = new SimpleDateFormat("hh:mm:ss a");
+	{		
 		try
 		{
 			Date startDate = fmt2.parse(start);
