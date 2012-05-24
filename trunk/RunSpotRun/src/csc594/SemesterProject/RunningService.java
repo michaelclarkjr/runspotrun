@@ -1,14 +1,11 @@
 package csc594.SemesterProject;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import com.google.android.maps.GeoPoint;
-
 import csc594.SemesterProject.MyGeoPoint.MyPointType;
 
 import android.app.Notification;
@@ -26,18 +23,16 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-//import android.provider.Settings;
-import android.util.Log;
 import android.widget.Toast;
 
 public class RunningService extends Service 
 {
 	private int latitude;
 	private int longitude;
-	//private String curDate;
 	private String routeName;
 	private String curTime;
 	private String curDist;
+	private GeoPoint lastPoint = null;
 
 	private Calendar cal = Calendar.getInstance();
 	private SimpleDateFormat fmt1 = new SimpleDateFormat("MM/dd/yyyy");
@@ -45,15 +40,12 @@ public class RunningService extends Service
 
 	private LocationManager mlocMgr;
 	private LocationListener mlocListener;
-	//private ArrayList<MyGeoPoint> route;
 	private int routeKeyDB;
 
 	private Timer mTimer = new Timer();
 	private TimerTask gpsUpdate;
 	private final Handler handler1 = new Handler();
 	
-	//private String tag="TestService";
-
 	private NotificationManager mNM;
 
 	// Unique Identification Number for the Notification.
@@ -89,18 +81,12 @@ public class RunningService extends Service
 		// Display a notification about us starting.  We put an icon in the status bar.
 		showNotification();
 
-		//latitude = 0;
-		//longitude = 0;
-		//curDate = fmt1.format(cal.getTime());
 		routeName = "newRoute";
 		curTime = fmt2.format(cal.getTime());
-		curDist = "0"; //placeHolder
-
-		//route = new ArrayList<MyGeoPoint>();
+		curDist = "0"; 
 	    routeKeyDB = 0;
 
 		mlocMgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
 		mlocListener = new MyLocationListener();
  		
         mlocMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60000, 1, mlocListener);
@@ -115,16 +101,9 @@ public class RunningService extends Service
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) 
 	{
-		//Log.i("LocalService", "Received start id " + startId + ": " + intent);
-		// We want this service to continue running until it is explicitly
-		// stopped, so return sticky.
-		//Toast.makeText(this, "onStartCommand", Toast.LENGTH_SHORT).show();
-		
 		//Location startLoc = mlocMgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 		//updateLatLong(startLoc);
 		
-		//Date curDate = cal.getTime(); //just need once
-		//route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Start));
 		RouteItem item = new RouteItem();
 	    item.setName(routeName);
 	    item.setDate(fmt1.format(cal.getTime())); //current date -  just need once
@@ -133,10 +112,6 @@ public class RunningService extends Service
 	    
 		routeKeyDB =  (int) MainActivity.DataBase.AddRoute(item); /*this returns long, need int for the key */
 		
-		 
-		//lastPoint = new GeoPoint(latitude, longitude);
-		//addToRoute();
-
 		/* Timed storing points for rest of the route */
 		gpsUpdate = new TimerTask() {
 			public void run() {
@@ -170,27 +145,8 @@ public class RunningService extends Service
 		mNM.cancel(NOTIFICATION);
 		mTimer.cancel(); //stop adding geo pts.
 		
-		//cal = Calendar.getInstance(); //update time
-		//curTime = fmt2.format(cal.getTime());
-		//route.add(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Stop))
-		//MainActivity.DataBase.AddPoint(new MyGeoPoint(latitude, longitude, curTime, curDist, routeName, MyPointType.Stop), routeKeyDB);
-		
 		addToRoute();
 		mlocMgr.removeUpdates(mlocListener); //unregister
-		
-		/** TESTING **/
-//		System.out.println("STOP");
-//		ArrayList<MyGeoPoint> route = MainActivity.DataBase.GetPoints(routeKeyDB);
-//		for(int i = 0; i < route.size(); i++)
-//		{
-//			MyGeoPoint testPt = route.get(i);
-//			System.out.println(testPt.getTypeAsString() + " " + "lat: " 
-//					+ testPt.getPoint().getLatitudeE6()  + " long: " + testPt.getPoint().getLongitudeE6()
-//					+ " " + testPt.getTimeAsString());
-//		}
-
-		// Tell the user we stopped.
-		//Toast.makeText(this, R.string.local_service_stopped, Toast.LENGTH_SHORT).show();
 	}
 
 	
@@ -216,12 +172,8 @@ public class RunningService extends Service
 		
 		latitude = (int) (lat * 1E6); //compatible with maps api
 		longitude = (int) (lng * 1E6);
-
-		//cal = Calendar.getInstance(); //update time
-		//curTime = fmt2.format(cal.getTime());
 	}    
 
-	GeoPoint lastPoint = null;
 	
 	private void addToRoute()
 	{
@@ -232,7 +184,6 @@ public class RunningService extends Service
 			//calc distance
 			distance = GetDistance(lastPoint, newPoint);
 			curDist = String.format("%.2f", distance); 
-			//curDist = Double.toString(distance);
 		}
 		lastPoint = newPoint;
 		
@@ -248,7 +199,7 @@ public class RunningService extends Service
 		{
 			float[] dist = new float[3];
 			Location.distanceBetween(p1.getLatitudeE6()/1E6, p1.getLongitudeE6()/ 1E6, p2.getLatitudeE6()/ 1E6, p2.getLongitudeE6()/ 1E6, dist);
-			//Location.distanceBetween(3932394,-84307652, 39324073,-84289284, dist);			
+						
 			return dist[0] * 0.000621371192;//meters to miles
 		}
 		catch(Exception e)
@@ -262,7 +213,6 @@ public class RunningService extends Service
 		@Override
 		public void onLocationChanged(Location loc)
 		{
-			//getRoutePointData(loc); //update route point data
 			updateLatLong(loc);
 		}	
 
@@ -304,15 +254,4 @@ public class RunningService extends Service
 		mNM.notify(NOTIFICATION, notification);
 	}
 
-	/*private void promptUserToTurnOnGPS()
-	{
-		Toast.makeText(this, R.string.gps_off_prompt, Toast.LENGTH_LONG).show();
-
-		final Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-		//intent.addCategory(Intent.CATEGORY_LAUNCHER);
-		//intent.setComponent(toLaunch);
-		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		//startActivityForResult(intent, 1);
-		startActivity(intent);
-	}*/ //worked but wasn't ideal checking from within this service
 }

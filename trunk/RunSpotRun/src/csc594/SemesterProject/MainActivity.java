@@ -122,7 +122,7 @@ public class MainActivity extends Activity implements OnClickListener
 			chronTimer.setBase(SystemClock.elapsedRealtime());
 			chronTimer.start();
 			progressBar.setVisibility(View.VISIBLE);
-			startBtn.setVisibility(View.GONE); //gone - no longer takes up space
+			startBtn.setVisibility(View.GONE); 
 			stopBtn.setVisibility(View.VISIBLE); 
 		}
 	}
@@ -131,18 +131,12 @@ public class MainActivity extends Activity implements OnClickListener
 	{
 		chronTimer.stop();
 		progressBar.setVisibility(View.INVISIBLE);
-		stopBtn.setVisibility(View.GONE); //gone - no longer takes up space
+		stopBtn.setVisibility(View.GONE); 
 		startBtn.setVisibility(View.VISIBLE);
 		chronTimer.setBase(SystemClock.elapsedRealtime()); //reset to 0
 		
 		/*Toast.makeText(this, "Route has been added to top of 'Past Trips' - Click on it to" +
 				" view statistics, map it, or delete route from history. ", Toast.LENGTH_LONG).show();*/
-		
-		/*new AlertDialog.Builder(this)
- 		  .setTitle("Completed Trip")
- 		  .setMessage(R.string.finished_route_in_list)
- 		  .setNeutralButton("OK", null)
- 		  .show();*/
 		
 		stopService(new Intent(this, RunningService.class));
 		

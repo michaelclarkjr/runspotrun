@@ -19,8 +19,6 @@ import android.graphics.RectF;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.widget.ToggleButton;
 
@@ -176,7 +174,7 @@ class MyOverlay extends Overlay
 		//offset into bitmap
 		xOffset = 16 + 8;//not sure why another half offset is needed...
 		yOffset = 32 + 16;
-		//xOffset = 16;//Lora works better this way on my phone
+		//xOffset = 16;//works better this way on my phone 3.2" screen
 		//yOffset = 32;
 		//---add the marker---
 		bmp = BitmapFactory.decodeResource(
@@ -188,7 +186,7 @@ class MyOverlay extends Overlay
 		//offset into bitmap
 		xOffset = 9 + 8;
 		yOffset = 32 + 16;
-		//xOffset = 9;//Lora works better this way on my phone
+		//xOffset = 9;//works better this way on my phone 3.2" screen
 		//yOffset = 32;
 		
 		//---add the marker---

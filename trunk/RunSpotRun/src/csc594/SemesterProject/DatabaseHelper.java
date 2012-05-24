@@ -1,17 +1,11 @@
 package csc594.SemesterProject;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
-
-import com.google.android.maps.GeoPoint;
-
-import csc594.SemesterProject.MyGeoPoint.MyPointType;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -56,7 +50,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		}
 		catch (Exception ex)
 		{
-			System.out.print("onCreate Force DB error ");
+			//System.out.print("onCreate Force DB error ");
 			System.out.println(ex.toString());
 		}
 	}
@@ -74,6 +68,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		ArrayList<RouteItem> routes = new ArrayList<RouteItem>();
 		
 		String SQL = "SELECT * FROM Route ORDER BY Date, StartTime ASC";
+
         Cursor cur = this.getReadableDatabase().rawQuery(SQL, null);
         
         if (cur.moveToFirst())
@@ -201,7 +196,6 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	{
 		String distFromLastPt = point.getDistance();
 		String distFromStart = UpdateRoute(distFromLastPt, point.getTime(), routeKey);
-		//String distFromStart = String.format("%.2f", UpdateRoute(distFromLastPt, point.getTime(), routeKey)); 
 		
 		//adds a point for given route key
 		ContentValues cv = new ContentValues();
@@ -211,8 +205,6 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		cv.put("Longitude", point.getPoint().getLongitudeE6());
 		cv.put("Time", point.getTime());
 		cv.put("Distance", distFromStart);
-		
-		//UpdateRoute(point.getDistance(), point.getTime(), routeKey);
 		
 		return this.getWritableDatabase().insert("Point", "RouteID", cv);
 	}
@@ -244,7 +236,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		RouteItem route = GetRoute(routeKey);
 		double currentDistance = route.getDistance();
 		
-		Double intermedDist = Double.parseDouble(newDistance) + currentDistance;
+		double intermedDist = Double.parseDouble(newDistance) + currentDistance;
 				
 		ContentValues cv = new ContentValues();
 	    cv.put("Distance", intermedDist);
@@ -255,19 +247,6 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	    //return intermedDist+""; 
 	    return String.format("%.2f", intermedDist); 
 	}
-	
-	
-	/*private void UpdateRoute(String newDistance, String endTime, int routeKey)
-	{
-		RouteItem route = GetRoute(routeKey);
-		double currentDistance = route.getDistance();
-		
-		ContentValues cv = new ContentValues();
-	    cv.put("Distance", Double.parseDouble(newDistance) + currentDistance);
-	    cv.put("EndTime", endTime);
-	    
-	    this.getWritableDatabase().update("Route", cv, "_id = ?", new String[] { Integer.toString(routeKey) });
-	}*/
 	
 	private RouteItem SetRouteFromCursor(Cursor cur)
 	{
@@ -304,7 +283,6 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		{
 			point = new MyGeoPoint(latitude, longitude, time, distance, name, MyGeoPoint.MyPointType.Normal);
 		}
-		//MyGeoPoint point = new MyGeoPoint(latitude, longitude, time, distance, name, MyGeoPoint.MyPointType.Normal);
     	
     	return point;
 	}
