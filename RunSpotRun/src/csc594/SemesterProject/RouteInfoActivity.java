@@ -1,8 +1,8 @@
 package csc594.SemesterProject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-
-import com.google.android.maps.GeoPoint;
+import java.util.Date;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -25,7 +25,9 @@ public class RouteInfoActivity extends Activity {
 	private int routeKeyDB;
 	private RouteItem route;
 	
-	private TextView tvDate, tvTime, tvDuration, tvDistance, tvSpeed;	
+	private TextView tvDate, tvTime, tvDuration, tvDistance, tvSpeed;
+	
+	private ArrayList<MyGeoPoint> points;
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -45,6 +47,7 @@ public class RouteInfoActivity extends Activity {
 	    	   
 	    //get database info
 	    route =  MainActivity.DataBase.GetRoute(routeKeyDB);
+	    points = MainActivity.DataBase.GetPoints(routeKeyDB);
 	    
 	    //update screen
 	    tvDate.setText(route.getDate());
@@ -52,11 +55,46 @@ public class RouteInfoActivity extends Activity {
 	    tvDistance.setText(route.getDistance().toString()+" miles");
 	    
 	    //calculate Average speed
-	    tvSpeed.setText("");
+	    double avgSpeed = CalculateAvgSpeed();
+	    tvSpeed.setText(String.format("%.2f mph", avgSpeed));
 	    
 	    //calculate Duration 
 	    tvDuration.setText(MainActivity.DataBase.GetRouteDuration(routeKeyDB));
 	}
+	
+	
+	private double CalculateAvgSpeed() 
+	{
+		SimpleDateFormat fmt2 = new SimpleDateFormat("hh:mm:ss a");
+		double totalDist = 0;
+		double dur = 0;
+		double avgSpeed = 0;
+		
+		try
+		{
+			totalDist = Double.parseDouble(route.getDistance().toString());
+			String start = route.getTime();
+			String end = points.get(points.size()-1).getTime();
+			
+			Date startDate = fmt2.parse(start);
+			Date endDate = fmt2.parse(end);
+
+			dur = (endDate.getTime() - startDate.getTime())/1000; //seconds
+			dur = dur / 3600; //hours
+			
+			if(dur != 0)
+			{
+				avgSpeed = totalDist/dur; //average speed - mph
+			}
+		}	
+		catch (Exception ex)
+		{
+			System.out.println(ex.toString());
+		}
+		
+		return avgSpeed; 
+	}
+	
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -89,7 +127,7 @@ public class RouteInfoActivity extends Activity {
 			SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(RouteInfoActivity.this);
 			String email = sharedPrefs.getString("emailKey", "");
 			
-			if(email.length() == 0 || !email.contains("@")) //isEmpty() fails on my phone and 2.2.1
+			if(email.length() == 0 || !email.contains("@")) //isEmpty() fails on my phone and. 2.2.1
 			{
 				Toast
 				.makeText(this, "You can add a valid default email the Menu | Settings", Toast.LENGTH_LONG)
@@ -98,7 +136,6 @@ public class RouteInfoActivity extends Activity {
 			}
 			
 			RouteItem route = MainActivity.DataBase.GetRoute(routeKeyDB);
-			ArrayList<MyGeoPoint> points = MainActivity.DataBase.GetPoints(routeKeyDB);
 						
 			String subject = "Jogging route " + route.getDate();
 			StringBuilder sb = new StringBuilder();
@@ -107,7 +144,7 @@ public class RouteInfoActivity extends Activity {
 			
 			sb.append("Route info:\n");
 			sb.append("Date: " + route.getDate() + "\n");
-			sb.append("Time: " + route.getTime() + "\n");
+			sb.append("Start Time: " + route.getTime() + "\n");
 			sb.append("Distance: " + Double.toString(route.getDistance()) + " miles\n\n");
 			
 			sb.append("Points:\n");
